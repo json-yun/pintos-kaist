@@ -51,7 +51,7 @@ typedef int tid_t;
  *           |                                 |
  *           |                                 |
  *           +---------------------------------+
- *           |              magic              |
+ *           |              magic              | <- magic이 스레드 자료구조의 최상단에 위치한다.
  *           |            intr_frame           |
  *           |                :                |
  *           |                :                |
@@ -94,6 +94,7 @@ struct thread {
 
 	/* Shared between thread.c and synch.c. */
 	struct list_elem elem;              /* List element. */
+    int64_t sleep_until;                /* Time to wake up(Ticks)*/
 
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */
@@ -123,8 +124,10 @@ void thread_print_stats (void);
 typedef void thread_func (void *aux);
 tid_t thread_create (const char *name, int priority, thread_func *, void *);
 
+void thread_sleep (int64_t time);
 void thread_block (void);
 void thread_unblock (struct thread *);
+void thread_awake (int64_t ticks);
 
 struct thread *thread_current (void);
 tid_t thread_tid (void);

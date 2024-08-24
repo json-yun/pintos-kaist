@@ -254,6 +254,12 @@ intr_register_int (uint8_t vec_no, int dpl, enum intr_level level,
 
 /* Returns true during processing of an external interrupt
    and false at all other times. */
+
+/**
+ * @brief  외부 인터럽트를 처리하고 있는지 여부
+ * 
+ * @return 외부 인터럽트 처리 중이면 True
+ */ 
 bool
 intr_context (void) {
 	return in_external_intr;
@@ -327,7 +333,7 @@ pic_end_of_interrupt (int irq) {
 /* Handler for all interrupts, faults, and exceptions.  This
    function is called by the assembly language interrupt stubs in
    intr-stubs.S.  FRAME describes the interrupt and the
-   interrupted thread's registers. */
+   interrupted thread's registers.  */
 void
 intr_handler (struct intr_frame *frame) {
 	bool external;

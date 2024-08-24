@@ -40,6 +40,9 @@ static struct lock tid_lock;
 /* Thread destruction requests */
 static struct list destruction_req;
 
+/* list of threads in THREAD_BLOCK state. */
+static struct list block_list;
+
 /* Statistics. */
 static long long idle_ticks;    /* # of timer ticks spent idle. */
 static long long kernel_ticks;  /* # of timer ticks in kernel threads. */
@@ -109,6 +112,7 @@ thread_init (void) {
 	lock_init (&tid_lock);
 	list_init (&ready_list);
 	list_init (&destruction_req);
+	list_init (&block_list);
 
 	/* Set up a thread structure for the running thread. */
 	initial_thread = running_thread ();
@@ -119,6 +123,9 @@ thread_init (void) {
 
 /* Starts preemptive thread scheduling by enabling interrupts.
    Also creates the idle thread. */
+// main 함수에서 부팅 시 호출된다.
+// 선점형 커널을 위해 인터럽트를 활성화함
+// 유휴 스레드를 만듦
 void
 thread_start (void) {
 	/* Create the idle thread. */
@@ -134,7 +141,9 @@ thread_start (void) {
 }
 
 /* Called by the timer interrupt handler at each timer tick.
-   Thus, this function runs in an external interrupt context. */
+   Thus, this function runs in an external interrupt context. 
+   idle_ticks 또는 kernel_ticks를 증가시키고 
+   thread_ticks가 TIME_SLICE를 초과한 경우   */
 void
 thread_tick (void) {
 	struct thread *t = thread_current ();
@@ -210,8 +219,37 @@ thread_create (const char *name, int priority,
 	return tid;
 }
 
+/* set sleep time &  */
+void
+thread_sleep (int64_t time) {
+    struct thread *t = thread_current ();
+    t->sleep_until = time;
+    list_push_back(&block_list, &t->elem);
+    thread_block();
+}
+
+void
+thread_awake (int64_t ticks) {
+    struct list_elem *cur=list_begin(&block_list);
+    struct list_elem *end=list_end(&block_list);
+    struct thread *cur_thread;
+
+    while (cur != end) {
+        cur_thread = list_entry(cur, struct thread, elem);
+        
+        if (cur_thread->sleep_until <= ticks) {
+            cur_thread->sleep_until = 0;
+            cur = list_remove(cur);
+            thread_unblock(cur_thread);
+        }
+        else
+            cur = list_next(cur);
+    }
+}
+
 /* Puts the current thread to sleep.  It will not be scheduled
    again until awoken by thread_unblock().
+   현재 스레드를 sleep상태로 만들고 다음 스레드를 실행함.
 
    This function must be called with interrupts turned off.  It
    is usually a better idea to use one of the synchronization
@@ -239,9 +277,11 @@ thread_unblock (struct thread *t) {
 	ASSERT (is_thread (t));
 
 	old_level = intr_disable ();
+
 	ASSERT (t->status == THREAD_BLOCKED);
 	list_push_back (&ready_list, &t->elem);
 	t->status = THREAD_READY;
+
 	intr_set_level (old_level);
 }
 
@@ -294,6 +334,8 @@ thread_exit (void) {
 
 /* Yields the CPU.  The current thread is not put to sleep and
    may be scheduled again immediately at the scheduler's whim. */
+// 현재 스레드를 다른 스레드에 양보하고 다시 스케줄한다.
+// 만약 인터럽트 중이었다면 잠시 중단한다.
 void
 thread_yield (void) {
 	struct thread *curr = thread_current ();
@@ -397,6 +439,7 @@ kernel_thread (thread_func *function, void *aux) {
 
 /* Does basic initialization of T as a blocked thread named
    NAME. */
+// 새로운 스레드 t를 초기화 함
 static void
 init_thread (struct thread *t, const char *name, int priority) {
 	ASSERT (t != NULL);
@@ -406,6 +449,7 @@ init_thread (struct thread *t, const char *name, int priority) {
 	memset (t, 0, sizeof *t);
 	t->status = THREAD_BLOCKED;
 	strlcpy (t->name, name, sizeof t->name);
+    t->sleep_until = 0;
 	t->tf.rsp = (uint64_t) t + PGSIZE - sizeof (void *);
 	t->priority = priority;
 	t->magic = THREAD_MAGIC;
@@ -524,7 +568,16 @@ thread_launch (struct thread *th) {
 /* Schedules a new process. At entry, interrupts must be off.
  * This function modify current thread's status to status and then
  * finds another thread to run and switches to it.
- * It's not safe to call printf() in the schedule(). */
+ * It's not safe to call printf() in the schedule().
+ * */
+/** @brief  현재 스레드의 상태를 status로 변경하고 다른 스레드로 전환
+ * 
+ * 현재 스레드의 상태를 인자 status로 변경.
+ * 파괴할 스레드 리스트에 있는 스레드들을 모두 파괴하고
+ * ready_list에 있는 다음 스레드로 문맥 전환
+ * 
+ * @param status 변경할 현재 스레드 상태
+ */
 static void
 do_schedule(int status) {
 	ASSERT (intr_get_level () == INTR_OFF);
@@ -538,6 +591,8 @@ do_schedule(int status) {
 	schedule ();
 }
 
+
+/* readylist의 다음 스레드를 실행시킴 */
 static void
 schedule (void) {
 	struct thread *curr = running_thread ();
@@ -565,9 +620,10 @@ schedule (void) {
 		   currently used by the stack.
 		   The real destruction logic will be called at the beginning of the
 		   schedule(). */
+        // 현재 스레드가 죽어가는 스레드 또는 엄한 스레드가 아니면 리스트의 맨 뒤로 보냄
 		if (curr && curr->status == THREAD_DYING && curr != initial_thread) {
 			ASSERT (curr != next);
-			list_push_back (&destruction_req, &curr->elem);
+			list_push_back (&destruction_req, &(curr->elem));
 		}
 
 		/* Before switching the thread, we first save the information
