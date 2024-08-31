@@ -189,6 +189,7 @@ tid_t
 thread_create (const char *name, int priority,
 		thread_func *function, void *aux) {
 	struct thread *t;
+    struct thread *ct = thread_current(); //debug
 	tid_t tid;
 
 	ASSERT (function != NULL);
@@ -215,17 +216,47 @@ thread_create (const char *name, int priority,
 
 	/* Add to run queue. */
 	thread_unblock (t);
+    if (thread_current() != idle_thread)
+        thread_preempt();
 
 	return tid;
 }
 
+/* Returns true if A is less than B, or
+   false if A is greater than or equal to B. */
+bool
+compare_value (const struct list_elem *elem, 
+                const struct list_elem *other_elem, 
+                void* offset) {
+    int64_t elem_value = *((int64_t *)((uint8_t *)elem + (size_t)offset));
+    int64_t other_value = *((int64_t *)((uint8_t *)other_elem + (size_t)offset));
+
+    return (elem_value < other_value);
+}
+
+/* Returns true if A is greater than B, or
+   false if A is less than or equal to B. */
+bool
+compare_rvalue (const struct list_elem *elem, 
+                const struct list_elem *other_elem, 
+                void* offset) {
+    int64_t elem_value = *((int64_t *)((uint8_t *)elem + (size_t)offset));
+    int64_t other_value = *((int64_t *)((uint8_t *)other_elem + (size_t)offset));
+
+    return (elem_value > other_value);
+}
+
 /* set sleep time &  */
 void
-thread_sleep (int64_t time) {
+thread_sleep (int64_t ticks) {
+    if (ticks <= 0) return;
+	enum intr_level old_level = intr_disable ();
     struct thread *t = thread_current ();
-    t->sleep_until = time;
-    list_push_back(&block_list, &t->elem);
+
+    t->sleep_until = ticks;
+    list_insert_ordered(&block_list, &t->elem, compare_value, OFFSET_THREAD(sleep_until));
     thread_block();
+	intr_set_level (old_level);
 }
 
 void
@@ -236,14 +267,15 @@ thread_awake (int64_t ticks) {
 
     while (cur != end) {
         cur_thread = list_entry(cur, struct thread, elem);
-        
+
         if (cur_thread->sleep_until <= ticks) {
             cur_thread->sleep_until = 0;
             cur = list_remove(cur);
             thread_unblock(cur_thread);
         }
         else
-            cur = list_next(cur);
+            break;
+            // cur = list_next(cur);
     }
 }
 
@@ -279,10 +311,24 @@ thread_unblock (struct thread *t) {
 	old_level = intr_disable ();
 
 	ASSERT (t->status == THREAD_BLOCKED);
-	list_push_back (&ready_list, &t->elem);
+    // list_insert_ordered(&ready_list, &t->elem, compare_rvalue, OFFSET_THREAD(priority));
+    list_push_back(&ready_list, &t->elem);
 	t->status = THREAD_READY;
 
 	intr_set_level (old_level);
+}
+
+// thread_current != idle_thread
+void
+thread_preempt (void) {
+    if (list_empty(&ready_list)) return;
+    int curr_priority = thread_current()->priority;
+    // int ready_priority = list_entry(list_front (&ready_list), struct thread, elem)->priority;
+    int ready_priority = list_entry(list_max (&ready_list, compare_priority, OFFSET_THREAD(priority)), struct thread, elem)->priority;
+    
+    // if new_thread's priority is higher than current_thread's
+    if (curr_priority < ready_priority)
+        thread_yield();
 }
 
 /* Returns the name of the running thread. */
@@ -345,7 +391,7 @@ thread_yield (void) {
 
 	old_level = intr_disable ();
 	if (curr != idle_thread)
-		list_push_back (&ready_list, &curr->elem);
+		list_insert_ordered(&ready_list, &curr->elem, compare_rvalue, OFFSET_THREAD(priority));
 	do_schedule (THREAD_READY);
 	intr_set_level (old_level);
 }
@@ -353,7 +399,16 @@ thread_yield (void) {
 /* Sets the current thread's priority to NEW_PRIORITY. */
 void
 thread_set_priority (int new_priority) {
-	thread_current ()->priority = new_priority;
+    struct thread *t = thread_current();
+    int old_priority = t->priority;
+
+    if (t->original_priority == t->priority) {
+    	t->priority = new_priority;
+    }
+    t->original_priority = new_priority;
+
+    if (t->priority < old_priority)
+        thread_yield();
 }
 
 /* Returns the current thread's priority. */
@@ -365,14 +420,23 @@ thread_get_priority (void) {
 /* Sets the current thread's nice value to NICE. */
 void
 thread_set_nice (int nice UNUSED) {
-	/* TODO: Your implementation goes here */
+	/* TODO: Sets the current thread's nice value to new nice 
+    and recalculates the thread's priority based on the new value (see Calculating Priority). 
+    If the running thread no longer has the highest priority, yields. */
+
+    // priority = PRI_MAX - (recent_cpu / 4) - (nice * 2)
+    int new_priority;
+
+    new_priority = PRI_MAX - (thread_get_recent_cpu() / 4) - (thread_get_nice() * 2);
+    if (new_priority < 0) new_priority = 0;
+
+    thread_set_priority(new_priority);
 }
 
 /* Returns the current thread's nice value. */
 int
 thread_get_nice (void) {
-	/* TODO: Your implementation goes here */
-	return 0;
+	return thread_current()->nice;
 }
 
 /* Returns 100 times the system load average. */
@@ -452,7 +516,19 @@ init_thread (struct thread *t, const char *name, int priority) {
     t->sleep_until = 0;
 	t->tf.rsp = (uint64_t) t + PGSIZE - sizeof (void *);
 	t->priority = priority;
+	t->original_priority = priority;
+    list_init(&t->lock_list);
 	t->magic = THREAD_MAGIC;
+}
+
+bool
+compare_priority (const struct list_elem *elem, 
+                const struct list_elem *other_elem, 
+                void* aux UNUSED) {
+    int64_t elem_value = *((int *)((uint8_t *)elem + (size_t)OFFSET_THREAD(priority)));
+    int64_t other_value = *((int *)((uint8_t *)other_elem + (size_t)OFFSET_THREAD(priority)));
+
+    return (elem_value < other_value);
 }
 
 /* Chooses and returns the next thread to be scheduled.  Should
@@ -462,10 +538,14 @@ init_thread (struct thread *t, const char *name, int priority) {
    idle_thread. */
 static struct thread *
 next_thread_to_run (void) {
+    struct list_elem *max;
 	if (list_empty (&ready_list))
 		return idle_thread;
-	else
-		return list_entry (list_pop_front (&ready_list), struct thread, elem);
+	else {
+        max = list_max(&ready_list, compare_priority, OFFSET_THREAD(priority));
+        list_remove(max);
+		return list_entry (max, struct thread, elem);
+    }
 }
 
 /* Use iretq to launch the thread */

@@ -28,6 +28,8 @@ typedef int tid_t;
 #define PRI_DEFAULT 31                  /* Default priority. */
 #define PRI_MAX 63                      /* Highest priority. */
 
+#define OFFSET_THREAD(MEMBER) (offsetof(struct thread, MEMBER) - offsetof(struct thread, elem))
+
 /* A kernel thread or user process.
  *
  * Each thread structure is stored in its own 4 kB page.  The
@@ -91,10 +93,14 @@ struct thread {
 	enum thread_status status;          /* Thread state. */
 	char name[16];                      /* Name (for debugging purposes). */
 	int priority;                       /* Priority. */
+    int original_priority;
+    int nice;
 
 	/* Shared between thread.c and synch.c. */
 	struct list_elem elem;              /* List element. */
     int64_t sleep_until;                /* Time to wake up(Ticks)*/
+    struct list lock_list;              /* List lock the thread has */
+    struct lock *waiting_for;      /* semaphore which thread is waiting for */
 
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */
@@ -114,6 +120,8 @@ struct thread {
    If true, use multi-level feedback queue scheduler.
    Controlled by kernel command-line option "-o mlfqs". */
 extern bool thread_mlfqs;
+
+int load_avg;
 
 void thread_init (void);
 void thread_start (void);
@@ -135,6 +143,7 @@ const char *thread_name (void);
 
 void thread_exit (void) NO_RETURN;
 void thread_yield (void);
+void thread_preempt (void);
 
 int thread_get_priority (void);
 void thread_set_priority (int);
@@ -145,5 +154,17 @@ int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 
 void do_iret (struct intr_frame *tf);
+
+bool compare_value (const struct list_elem *elem, 
+                const struct list_elem *other_elem, 
+                void* offset);
+bool compare_rvalue (const struct list_elem *elem, 
+                const struct list_elem *other_elem, 
+                void* offset);
+
+bool
+compare_priority (const struct list_elem *elem, 
+                const struct list_elem *other_elem, 
+                void* aux UNUSED);
 
 #endif /* threads/thread.h */

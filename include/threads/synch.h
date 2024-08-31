@@ -8,6 +8,8 @@
 struct semaphore {
 	unsigned value;             /* Current value. */
 	struct list waiters;        /* List of waiting threads. */
+    // int sema_priority;
+    // struct list_elem elem;
 };
 
 void sema_init (struct semaphore *, unsigned value);
@@ -20,6 +22,8 @@ void sema_self_test (void);
 struct lock {
 	struct thread *holder;      /* Thread holding lock (for debugging). */
 	struct semaphore semaphore; /* Binary semaphore controlling access. */
+    int lock_priority;          /* max priority among waiters */
+    struct list_elem elem;
 };
 
 void lock_init (struct lock *);
@@ -27,6 +31,7 @@ void lock_acquire (struct lock *);
 bool lock_try_acquire (struct lock *);
 void lock_release (struct lock *);
 bool lock_held_by_current_thread (const struct lock *);
+void donate_priority (struct lock *lock, int priority);
 
 /* Condition variable. */
 struct condition {
@@ -37,6 +42,8 @@ void cond_init (struct condition *);
 void cond_wait (struct condition *, struct lock *);
 void cond_signal (struct condition *, struct lock *);
 void cond_broadcast (struct condition *, struct lock *);
+
+#define SET_MAX_PRIORITY(T, PRIORITY) ((T)->priority = (T)->priority < (PRIORITY) ? (PRIORITY) : (T)->priority)
 
 /* Optimization barrier.
  *

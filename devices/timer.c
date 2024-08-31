@@ -90,13 +90,11 @@ timer_elapsed (int64_t then) {
 /* Suspends execution for approximately TICKS timer ticks. */
 void
 timer_sleep (int64_t ticks) {
-	enum intr_level old_level = intr_disable ();
 	int64_t start = timer_ticks ();
 
     // THREAD_BLOCKED를 이용할 것
     // push 블록된 스레드 리스트
     thread_sleep(start + ticks);
-	intr_set_level (old_level);
 }
 
 /* Suspends execution for approximately MS milliseconds. */

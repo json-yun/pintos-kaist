@@ -487,3 +487,18 @@ list_min (struct list *list, list_less_func *less, void *aux) {
 	}
 	return min;
 }
+
+struct list_elem *
+list_pop_max (struct list *list, list_less_func *less, void *aux) {
+	struct list_elem *max = list_begin (list);
+	if (max != list_end (list)) {
+		struct list_elem *e;
+
+		for (e = list_next (max); e != list_end (list); e = list_next (e))
+			if (less (max, e, aux))
+				max = e;
+        
+        list_remove(max);
+	}
+	return max;
+}

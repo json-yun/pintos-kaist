@@ -99,10 +99,11 @@ struct list {
    the structure that LIST_ELEM is embedded inside.  Supply the
    name of the outer structure STRUCT and the member name MEMBER
    of the list element.  See the big comment at the top of the
-   file for an example. */
-#define list_entry(LIST_ELEM, STRUCT, MEMBER)           \
-	((STRUCT *) ((uint8_t *) &(LIST_ELEM)->next     \
-		- offsetof (STRUCT, MEMBER.next)))
+   file for an example.
+   LIST_ELEM에 대한 포인터(LIST_ELEM *)를
+   해당 LIST_ELEM을 포함된 구조체의 주소로 변환 */
+#define list_entry(LIST_ELEM, STRUCT, MEMBER) \
+((STRUCT *) ((uint8_t *) &(LIST_ELEM)->next - offsetof (STRUCT, MEMBER.next)))
 
 void list_init (struct list *);
 
@@ -159,5 +160,5 @@ void list_unique (struct list *, struct list *duplicates,
 /* Max and min. */
 struct list_elem *list_max (struct list *, list_less_func *, void *aux);
 struct list_elem *list_min (struct list *, list_less_func *, void *aux);
-
+struct list_elem *list_pop_max (struct list *list, list_less_func *less, void *aux);
 #endif /* lib/kernel/list.h */

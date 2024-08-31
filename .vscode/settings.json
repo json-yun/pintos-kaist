@@ -1,0 +1,18 @@
+{
+    "files.associations": {
+        "intrinsic.h": "c",
+        "palloc.h": "c",
+        "flags.h": "c",
+        "intr-stubs.h": "c",
+        "synch.h": "c",
+        "interrupt.h": "c",
+        "thread.h": "c",
+        "stddef.h": "c",
+        "vaddr.h": "c",
+        "syscall.h": "c",
+        "malloc.h": "c",
+        "debug.h": "c",
+        "stdint.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "enabled"
+}
