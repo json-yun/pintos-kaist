@@ -196,18 +196,24 @@ lock_acquire (struct lock *lock) {
 
     struct list_elem *e;
 
-    old_priority = lock->lock_priority;
-    if (lock->semaphore.value == 0) {
-        lock->lock_priority = thread_current()->priority;
-        donate_priority(lock, lock->lock_priority);
+    if (!thread_mlfqs) {
+        old_priority = lock->lock_priority;
+        if (lock->semaphore.value == 0) {
+            lock->lock_priority = thread_current()->priority;
+            donate_priority(lock, lock->lock_priority);
+        }
+        thread_current()->waiting_for = lock;
+        sema_down (&lock->semaphore);
+        thread_current()->waiting_for = NULL;
+        lock->lock_priority = old_priority;
+        
+        lock->holder = thread_current ();
+        list_push_back(&thread_current()->lock_list, &lock->elem);
     }
-    thread_current()->waiting_for = lock;
-	sema_down (&lock->semaphore);
-    thread_current()->waiting_for = NULL;
-    lock->lock_priority = old_priority;
-    
-	lock->holder = thread_current ();
-    list_push_back(&thread_current()->lock_list, &lock->elem);
+    else {
+        sema_down (&lock->semaphore);
+        lock->holder = thread_current ();
+    }
 }
 
 void
@@ -254,7 +260,6 @@ recover_priority (void) {
 int
 get_inherited_priority (struct list *list) {
 	struct list_elem *elem, *next;
-    int max = -1;
 
 	ASSERT (list != NULL);
 	if (list_empty (list))
@@ -295,12 +300,17 @@ lock_release (struct lock *lock) {
 	ASSERT (lock != NULL);
 	ASSERT (lock_held_by_current_thread (lock));
     
-    struct thread *t = thread_current();
-
-	lock->holder = NULL;
-    list_remove(&lock->elem); // 스레드의 소유 락 리스트에서 제거
-    recover_priority();
-	sema_up (&lock->semaphore);
+    if (!thread_mlfqs) {
+        struct thread *t = thread_current();
+        lock->holder = NULL;
+        list_remove(&lock->elem); // 스레드의 소유 락 리스트에서 제거
+        recover_priority();
+        sema_up (&lock->semaphore);
+    }
+    else {
+        lock->holder = NULL;
+        sema_up (&lock->semaphore);
+    }
 }
 
 /* Returns true if the current thread holds LOCK, false

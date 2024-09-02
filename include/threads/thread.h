@@ -30,6 +30,20 @@ typedef int tid_t;
 
 #define OFFSET_THREAD(MEMBER) (offsetof(struct thread, MEMBER) - offsetof(struct thread, elem))
 
+// Fixed_point Real Arithmetic
+#define F_SCALE (1 << 14)                                                // 고정소수점의 스케일(여기서는 2^14를 사용)
+#define INT_TO_FP(n) ((n) * F_SCALE)                                       // Convert n to fixed point: n * f
+#define FP_TO_INT_ZERO(x) ((x) / F_SCALE)                                    // Convert x to integer (rounding toward zero): x / f
+#define FP_TO_INT_NEAREST(x) ((x) >= 0 ? ((x) + F_SCALE / 2) / F_SCALE : ((x) - F_SCALE / 2) / F_SCALE) // Convert x to integer (rounding to nearest)
+#define FP_ADD(x, y) ((x) + (y))                                    // Add x and y: x + y
+#define FP_SUB(x, y) ((x) - (y))                                    // Subtract y from x: x - y
+#define FP_ADD_INT(x, n) ((x) + (n) * F_SCALE)                              // Add x and n: x + n * f
+#define FP_SUB_INT(x, n) ((x) - (n) * F_SCALE)                              // Subtract n from x: x - n * f
+#define FP_MUL(x, y) (((int64_t)(x)) * (y) / F_SCALE)                           // Multiply x by y: ((int64_t) x) * y / f
+#define FP_MUL_INT(x, n) ((x) * (n))                                 // Multiply x by n: x * n
+#define FP_DIV(x, y) (((int64_t)(x)) * F_SCALE / (y))                           // Divide x by y: ((int64_t) x) * f / y
+#define FP_DIV_INT(x, n) ((x) / (n))                                 // Divide x by n: x / n
+
 /* A kernel thread or user process.
  *
  * Each thread structure is stored in its own 4 kB page.  The
@@ -95,12 +109,14 @@ struct thread {
 	int priority;                       /* Priority. */
     int original_priority;
     int nice;
+    int recent_cpu;
 
 	/* Shared between thread.c and synch.c. */
 	struct list_elem elem;              /* List element. */
     int64_t sleep_until;                /* Time to wake up(Ticks)*/
     struct list lock_list;              /* List lock the thread has */
     struct lock *waiting_for;      /* semaphore which thread is waiting for */
+    struct list_elem all_elem;
 
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */

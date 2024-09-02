@@ -12,7 +12,8 @@
         "syscall.h": "c",
         "malloc.h": "c",
         "debug.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "*.inc": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }
