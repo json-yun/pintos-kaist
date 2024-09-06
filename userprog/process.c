@@ -204,6 +204,9 @@ process_wait (tid_t child_tid UNUSED) {
 	/* XXX: Hint) The pintos exit if process_wait (initd), we recommend you
 	 * XXX:       to add infinite loop here before
 	 * XXX:       implementing the process_wait. */
+    while (1)
+        thread_sleep(100);
+
 	return -1;
 }
 
@@ -408,14 +411,18 @@ load (const char *file_name, struct intr_frame *if_) {
 	}
 
 	/* Set up stack. */
+    // 0초기화 페이지 하나(4kB)를 USER_STACK 주소 위치에 할당한다.
+    // %rsp를 USER_STACK으로 세팅한다.
 	if (!setup_stack (if_))
 		goto done;
 
-	/* Start address. */
+	/* Start address. 명령어 포인터에 엔트리 지정 */
 	if_->rip = ehdr.e_entry;
 
 	/* TODO: Your code goes here.
 	 * TODO: Implement argument passing (see project2/argument_passing.html). */
+    // 파싱
+    parse_argument(file_name, if_);
 
 	success = true;
 
@@ -425,6 +432,69 @@ done:
 	return success;
 }
 
+// 스택에 적재(4kB이내)
+void
+parse_argument (const char *file_name, struct intr_frame *if_) {
+    char *s = file_name;
+    char *token;
+    // 스택 사용해서 역순으로 오른쪽 토큰부터 스택의 윗쪽에 집어넣어야 함
+    char *sp =  USER_STACK;
+    char *argv[256];
+    int length;
+    int argc = 0;
+
+    // 아규먼트 스택에 삽입
+    while (*s != '\0') {
+        // s의 첫글자가 delimiters와 같으면 멈춤
+        while (strchr (' ', *s) != NULL) {
+            /* strchr() will always return nonnull if we're searching
+            for a null byte, because every string contains a null
+            byte (at the end). */
+            if (*s == '\0') {
+                break;
+            }
+            else
+                s++;
+        }
+
+        /* Skip any non-DELIMITERS up to the end of the string. */
+        // 토큰의 끝에 널문자를 삽입하고 토큰 시작 포인터를 리턴함.
+        token = s;
+        length = 0;
+        while (strchr (' ', *s) == NULL) {
+            s++;
+            sp--;
+            length++;
+        }
+
+        if (token == s)
+            break;
+        if (*s != '\0') {
+            *s = '\0';
+            sp--;
+            length++;
+        }
+        s++;
+        strlcpy(sp, token, length);
+        argv[argc++] = sp;
+    }
+    argv[argc] = NULL;
+
+    // 스택 포인터 정렬
+    sp -= ((size_t)(*sp) & 7);
+    // 포인터 삽입
+    for(; argc >= 0; argc--) {
+        sp -= 8;
+        *((char **)sp) = argv[argc];
+    }
+    // return address;
+    sp -= 8;
+    // 스택 포인터 설정
+    if_->rsp = sp;
+    // %rdi = argc, $rsi = argv 설정?
+    if_->R.rdi = argc;
+    if_->R.rsi = argv;
+}
 
 /* Checks whether PHDR describes a valid, loadable segment in
  * FILE and returns true if so, false otherwise. */
