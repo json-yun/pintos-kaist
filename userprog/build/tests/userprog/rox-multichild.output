@@ -14,12 +14,12 @@ Putting 'rox-multichild' into the file system...
 Putting 'child-rox' into the file system...
 Executing 'rox-multichild':
 Execution of 'rox-multichild' complete.
-Timer: 68 ticks
-Thread: 40 idle ticks, 28 kernel ticks, 0 user ticks
+Timer: 258 ticks
+Thread: 41 idle ticks, 217 kernel ticks, 0 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 61 reads, 478 writes
+hd0:1: 107 reads, 478 writes
 hd1:0: 220 reads, 0 writes
-Console: 871 characters output
+Console: 874 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

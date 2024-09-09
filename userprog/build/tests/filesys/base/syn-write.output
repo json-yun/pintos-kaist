@@ -14,12 +14,12 @@ Putting 'syn-write' into the file system...
 Putting 'child-syn-wrt' into the file system...
 Executing 'syn-write':
 Execution of 'syn-write' complete.
-Timer: 68 ticks
-Thread: 42 idle ticks, 26 kernel ticks, 0 user ticks
+Timer: 258 ticks
+Thread: 37 idle ticks, 221 kernel ticks, 0 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 61 reads, 490 writes
+hd0:1: 107 reads, 490 writes
 hd1:0: 226 reads, 0 writes
-Console: 854 characters output
+Console: 857 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

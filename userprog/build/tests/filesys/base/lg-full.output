@@ -13,12 +13,12 @@ Boot complete.
 Putting 'lg-full' into the file system...
 Executing 'lg-full':
 Execution of 'lg-full' complete.
-Timer: 61 ticks
-Thread: 33 idle ticks, 28 kernel ticks, 0 user ticks
+Timer: 252 ticks
+Thread: 37 idle ticks, 215 kernel ticks, 0 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 33 reads, 240 writes
+hd0:1: 79 reads, 240 writes
 hd1:0: 106 reads, 0 writes
-Console: 777 characters output
+Console: 779 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

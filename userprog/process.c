@@ -38,6 +38,7 @@ process_init (void) {
  * before process_create_initd() returns. Returns the initd's
  * thread id, or TID_ERROR if the thread cannot be created.
  * Notice that THIS SHOULD BE CALLED ONCE. */
+// 첫 유저 영역 프로그램(리눅스 등은 커널 만으로 부팅이 불가능한 경우도 있다)이 실행될 때 호출
 tid_t
 process_create_initd (const char *file_name) {
 	char *fn_copy;
@@ -204,8 +205,10 @@ process_wait (tid_t child_tid UNUSED) {
 	/* XXX: Hint) The pintos exit if process_wait (initd), we recommend you
 	 * XXX:       to add infinite loop here before
 	 * XXX:       implementing the process_wait. */
-    while (1)
-        thread_sleep(100);
+    int i=0;
+    while (i <= (1<<28)) {
+        i++;
+    }
 
 	return -1;
 }
@@ -218,6 +221,7 @@ process_exit (void) {
 	 * TODO: Implement process termination message (see
 	 * TODO: project2/process_termination.html).
 	 * TODO: We recommend you to implement process resource cleanup here. */
+    // page 지우라는 건가
 
 	process_cleanup ();
 }
@@ -331,12 +335,23 @@ load (const char *file_name, struct intr_frame *if_) {
 	off_t file_ofs;
 	bool success = false;
 	int i;
+    char *s = file_name;
 
 	/* Allocate and activate page directory. */
 	t->pml4 = pml4_create ();
 	if (t->pml4 == NULL)
 		goto done;
 	process_activate (thread_current ());
+
+	/* Set up stack. */
+    // 0초기화 페이지 하나(4kB)를 USER_STACK 주소 위치에 할당한다.
+    // %rsp를 USER_STACK으로 세팅한다.
+    // 스택 셋업 후 파일 읽기 실패시 메모리 누수
+	if (!setup_stack (if_))
+		goto done;
+
+	//
+    parse_argument(file_name, if_);
 
 	/* Open executable file. */
 	file = filesys_open (file_name);
@@ -410,19 +425,8 @@ load (const char *file_name, struct intr_frame *if_) {
 		}
 	}
 
-	/* Set up stack. */
-    // 0초기화 페이지 하나(4kB)를 USER_STACK 주소 위치에 할당한다.
-    // %rsp를 USER_STACK으로 세팅한다.
-	if (!setup_stack (if_))
-		goto done;
-
-	/* Start address. 명령어 포인터에 엔트리 지정 */
+    /* Start address. 명령어 포인터에 엔트리 지정 */
 	if_->rip = ehdr.e_entry;
-
-	/* TODO: Your code goes here.
-	 * TODO: Implement argument passing (see project2/argument_passing.html). */
-    // 파싱
-    parse_argument(file_name, if_);
 
 	success = true;
 
@@ -438,7 +442,7 @@ parse_argument (const char *file_name, struct intr_frame *if_) {
     char *s = file_name;
     char *token;
     // 스택 사용해서 역순으로 오른쪽 토큰부터 스택의 윗쪽에 집어넣어야 함
-    char *sp =  USER_STACK;
+    char *sp = USER_STACK;
     char *argv[256];
     int length;
     int argc = 0;
@@ -446,7 +450,7 @@ parse_argument (const char *file_name, struct intr_frame *if_) {
     // 아규먼트 스택에 삽입
     while (*s != '\0') {
         // s의 첫글자가 delimiters와 같으면 멈춤
-        while (strchr (' ', *s) != NULL) {
+        while (strchr (" ", *s) != NULL) {
             /* strchr() will always return nonnull if we're searching
             for a null byte, because every string contains a null
             byte (at the end). */
@@ -461,7 +465,7 @@ parse_argument (const char *file_name, struct intr_frame *if_) {
         // 토큰의 끝에 널문자를 삽입하고 토큰 시작 포인터를 리턴함.
         token = s;
         length = 0;
-        while (strchr (' ', *s) == NULL) {
+        while (strchr (" ", *s) == NULL) {
             s++;
             sp--;
             length++;
@@ -470,30 +474,32 @@ parse_argument (const char *file_name, struct intr_frame *if_) {
         if (token == s)
             break;
         if (*s != '\0') {
-            *s = '\0';
-            sp--;
-            length++;
+            *s++ = '\0';
         }
-        s++;
+        sp--;
+        length++;
+        // else
         strlcpy(sp, token, length);
         argv[argc++] = sp;
     }
-    argv[argc] = NULL;
+    if_->R.rdi = argc;
+    // argv[argc--] = NULL;
+    argc--;
 
     // 스택 포인터 정렬
-    sp -= ((size_t)(*sp) & 7);
+    sp -= ((uintptr_t)(sp) & 7ULL);    
+    sp -= 8;
     // 포인터 삽입
     for(; argc >= 0; argc--) {
         sp -= 8;
-        *((char **)sp) = argv[argc];
+        memcpy(sp, argv[argc], 8);
     }
+    // %rdi = argc, $rsi = argv 설정?
+    if_->R.rsi = sp;
     // return address;
     sp -= 8;
     // 스택 포인터 설정
     if_->rsp = sp;
-    // %rdi = argc, $rsi = argv 설정?
-    if_->R.rdi = argc;
-    if_->R.rsi = argv;
 }
 
 /* Checks whether PHDR describes a valid, loadable segment in

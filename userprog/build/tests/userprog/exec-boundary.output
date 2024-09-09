@@ -13,13 +13,22 @@ Boot complete.
 Putting 'exec-boundary' into the file system...
 Putting 'child-simple' into the file system...
 Executing 'exec-boundary':
+exec-boundary: dying due to interrupt 0x0d (#GP General Protection Exception).
+Interrupt 0x0d (#GP General Protection Exception) at rip=402f84
+ cr2=0000000000000000 error=               0
+rax 756f622d63657865 rbx 0000000000000000 rcx 0000000000000020 rdx 756f622d63657865
+rsp 000000004747fd90 rbp 000000004747fdb0 rsi ffffffffffffffff rdi 756f622d63657865
+rip 0000000000402f84 r8 0000000000401162  r9 0000000000000000 r10 0000000000000000
+r11 0000000000000000 r12 0000000000000000 r13 0000000000000000 r14 0000000000000000
+r15 0000000000000000 rflags 00000206
+es: 001b ds: 001b cs: 0023 ss: 001b
 Execution of 'exec-boundary' complete.
-Timer: 68 ticks
-Thread: 40 idle ticks, 28 kernel ticks, 0 user ticks
+Timer: 262 ticks
+Thread: 39 idle ticks, 223 kernel ticks, 1 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 61 reads, 452 writes
+hd0:1: 107 reads, 452 writes
 hd1:0: 207 reads, 0 writes
-Console: 872 characters output
+Console: 1471 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

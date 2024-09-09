@@ -1,2 +1,22 @@
 FAIL
-Run didn't produce any output
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (read-zero) begin
+  (read-zero) open "sample.txt"
+  (read-zero) end
+  read-zero: exit(0)
+Differences in `diff -u' format:
+- (read-zero) begin
+- (read-zero) open "sample.txt"
+- (read-zero) end
+- read-zero: exit(0)
++ read-zero: dying due to interrupt 0x0d (#GP General Protection Exception).
++ Interrupt 0x0d (#GP General Protection Exception) at rip=402ea3
++  cr2=0000000000000000 error=               0
++ rax 72657a2d64616572 rbx 0000000000000000 rcx 0000000000000020 rdx 72657a2d64616572
++ rsp 000000004747fd90 rbp 000000004747fdb0 rsi ffffffffffffffff rdi 72657a2d64616572
++ rip 0000000000402ea3 r8 0000000000401081  r9 0000000000000000 r10 0000000000000000
++ r11 0000000000000000 r12 0000000000000000 r13 0000000000000000 r14 0000000000000000
++ r15 0000000000000000 rflags 00000206
++ es: 001b ds: 001b cs: 0023 ss: 001b

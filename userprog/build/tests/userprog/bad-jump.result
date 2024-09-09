@@ -1,2 +1,19 @@
 FAIL
-Run didn't produce any output
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (bad-jump) begin
+  bad-jump: exit(-1)
+Differences in `diff -u' format:
+- (bad-jump) begin
+- bad-jump: exit(-1)
++ bad-jump: dying due to interrupt 0x0d (#GP General Protection Exception).
++ Interrupt 0x0d (#GP General Protection Exception) at rip=402e19
++ rax 706d756a2d646162 rbx 0000000000000000 rcx 0000000000000020 rdx 706d756a2d646162
++ rsp 000000004747fd90 rbp 000000004747fdb0 rsi ffffffffffffffff rdi 706d756a2d646162
++ rip 0000000000402e19 r8 0000000000400ff7  r9 0000000000000000 r10 0000000000000000
++ r11 0000000000000000 r12 0000000000000000 r13 0000000000000000 r14 0000000000000000
++ r15 0000000000000000 rflags 00000202
++ es: 001b ds: 001b cs: 0023 ss: 001b
+
+(User fault messages are excluded for matching purposes.)

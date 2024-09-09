@@ -1,2 +1,28 @@
 FAIL
-Run didn't produce any output
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (sm-create) begin
+  (sm-create) create "blargle"
+  (sm-create) open "blargle" for verification
+  (sm-create) verified contents of "blargle"
+  (sm-create) close "blargle"
+  (sm-create) end
+Differences in `diff -u' format:
+- (sm-create) begin
+- (sm-create) create "blargle"
+- (sm-create) open "blargle" for verification
+- (sm-create) verified contents of "blargle"
+- (sm-create) close "blargle"
+- (sm-create) end
++ sm-create: dying due to interrupt 0x0d (#GP General Protection Exception).
++ Interrupt 0x0d (#GP General Protection Exception) at rip=4030a7
++  cr2=0000000000000000 error=               0
++ rax 74616572632d6d73 rbx 0000000000000000 rcx 0000000000000020 rdx 74616572632d6d73
++ rsp 000000004747fd90 rbp 000000004747fdb0 rsi ffffffffffffffff rdi 74616572632d6d73
++ rip 00000000004030a7 r8 0000000000401285  r9 0000000000000000 r10 0000000000000000
++ r11 0000000000000000 r12 0000000000000000 r13 0000000000000000 r14 0000000000000000
++ r15 0000000000000000 rflags 00000202
++ es: 001b ds: 001b cs: 0023 ss: 001b
+
+(Process exit codes are excluded for matching purposes.)

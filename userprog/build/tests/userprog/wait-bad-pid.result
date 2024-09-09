@@ -1,2 +1,35 @@
 FAIL
-Run didn't produce any output
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (wait-bad-pid) begin
+  (wait-bad-pid) end
+  wait-bad-pid: exit(0)
+Differences in `diff -u' format:
+- (wait-bad-pid) begin
+- (wait-bad-pid) end
+- wait-bad-pid: exit(0)
++ wait-bad-pid: dying due to interrupt 0x0d (#GP General Protection Exception).
++ Interrupt 0x0d (#GP General Protection Exception) at rip=402dee
++  cr2=0000000000000000 error=               0
++ rax 6461622d74696177 rbx 0000000000000000 rcx 0000000000000020 rdx 6461622d74696177
++ rsp 000000004747fd90 rbp 000000004747fdb0 rsi ffffffffffffffff rdi 6461622d74696177
++ rip 0000000000402dee r8 0000000000400fcc  r9 0000000000000000 r10 0000000000000000
++ r11 0000000000000000 r12 0000000000000000 r13 0000000000000000 r14 0000000000000000
++ r15 0000000000000000 rflags 00000206
++ es: 001b ds: 001b cs: 0023 ss: 001b
+Acceptable output:
+  (wait-bad-pid) begin
+  wait-bad-pid: exit(-1)
+Differences in `diff -u' format:
+- (wait-bad-pid) begin
+- wait-bad-pid: exit(-1)
++ wait-bad-pid: dying due to interrupt 0x0d (#GP General Protection Exception).
++ Interrupt 0x0d (#GP General Protection Exception) at rip=402dee
++  cr2=0000000000000000 error=               0
++ rax 6461622d74696177 rbx 0000000000000000 rcx 0000000000000020 rdx 6461622d74696177
++ rsp 000000004747fd90 rbp 000000004747fdb0 rsi ffffffffffffffff rdi 6461622d74696177
++ rip 0000000000402dee r8 0000000000400fcc  r9 0000000000000000 r10 0000000000000000
++ r11 0000000000000000 r12 0000000000000000 r13 0000000000000000 r14 0000000000000000
++ r15 0000000000000000 rflags 00000206
++ es: 001b ds: 001b cs: 0023 ss: 001b

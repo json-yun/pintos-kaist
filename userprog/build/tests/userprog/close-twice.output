@@ -13,13 +13,22 @@ Boot complete.
 Putting 'close-twice' into the file system...
 Putting 'sample.txt' into the file system...
 Executing 'close-twice':
+close-twice: dying due to interrupt 0x0d (#GP General Protection Exception).
+Interrupt 0x0d (#GP General Protection Exception) at rip=402e8e
+ cr2=0000000000000000 error=               0
+rax 77742d65736f6c63 rbx 0000000000000000 rcx 0000000000000020 rdx 77742d65736f6c63
+rsp 000000004747fd90 rbp 000000004747fdb0 rsi ffffffffffffffff rdi 77742d65736f6c63
+rip 0000000000402e8e r8 000000000040106c  r9 0000000000000000 r10 0000000000000000
+r11 0000000000000000 r12 0000000000000000 r13 0000000000000000 r14 0000000000000000
+r15 0000000000000000 rflags 00000206
+es: 001b ds: 001b cs: 0023 ss: 001b
 Execution of 'close-twice' complete.
-Timer: 61 ticks
-Thread: 34 idle ticks, 27 kernel ticks, 0 user ticks
+Timer: 259 ticks
+Thread: 36 idle ticks, 221 kernel ticks, 2 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 61 reads, 248 writes
+hd0:1: 107 reads, 248 writes
 hd1:0: 105 reads, 0 writes
-Console: 857 characters output
+Console: 1454 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

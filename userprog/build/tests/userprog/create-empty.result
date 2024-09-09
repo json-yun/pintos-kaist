@@ -1,2 +1,37 @@
 FAIL
-Run didn't produce any output
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (create-empty) begin
+  (create-empty) create(""): 0
+  (create-empty) end
+  create-empty: exit(0)
+Differences in `diff -u' format:
+- (create-empty) begin
+- (create-empty) create(""): 0
+- (create-empty) end
+- create-empty: exit(0)
++ create-empty: dying due to interrupt 0x0d (#GP General Protection Exception).
++ Interrupt 0x0d (#GP General Protection Exception) at rip=402e18
++  cr2=0000000000000000 error=               0
++ rax 652d657461657263 rbx 0000000000000000 rcx 0000000000000020 rdx 652d657461657263
++ rsp 000000004747fd90 rbp 000000004747fdb0 rsi ffffffffffffffff rdi 652d657461657263
++ rip 0000000000402e18 r8 0000000000400ff6  r9 0000000000000000 r10 0000000000000000
++ r11 0000000000000000 r12 0000000000000000 r13 0000000000000000 r14 0000000000000000
++ r15 0000000000000000 rflags 00000206
++ es: 001b ds: 001b cs: 0023 ss: 001b
+Acceptable output:
+  (create-empty) begin
+  create-empty: exit(-1)
+Differences in `diff -u' format:
+- (create-empty) begin
+- create-empty: exit(-1)
++ create-empty: dying due to interrupt 0x0d (#GP General Protection Exception).
++ Interrupt 0x0d (#GP General Protection Exception) at rip=402e18
++  cr2=0000000000000000 error=               0
++ rax 652d657461657263 rbx 0000000000000000 rcx 0000000000000020 rdx 652d657461657263
++ rsp 000000004747fd90 rbp 000000004747fdb0 rsi ffffffffffffffff rdi 652d657461657263
++ rip 0000000000402e18 r8 0000000000400ff6  r9 0000000000000000 r10 0000000000000000
++ r11 0000000000000000 r12 0000000000000000 r13 0000000000000000 r14 0000000000000000
++ r15 0000000000000000 rflags 00000206
++ es: 001b ds: 001b cs: 0023 ss: 001b

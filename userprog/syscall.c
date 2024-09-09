@@ -7,9 +7,11 @@
 #include "userprog/gdt.h"
 #include "threads/flags.h"
 #include "intrinsic.h"
+#include "../include/threads/init.h"
 
 void syscall_entry (void);
 void syscall_handler (struct intr_frame *);
+static void halt (void);
 
 /* System call.
  *
@@ -38,9 +40,50 @@ syscall_init (void) {
 }
 
 /* The main system call interface */
+/* 인터럽트 핸들러에 의해 호출됨.
+ * 인터럽트 당시 스레드 상태를 담은 인터럽트 프레임 포인터를 인자로 받음 */
 void
-syscall_handler (struct intr_frame *f UNUSED) {
+syscall_handler (struct intr_frame *f) {
 	// TODO: Your implementation goes here.
-	printf ("system call!\n");
-	thread_exit ();
+    uint64_t num = f->R.rax;
+    uint64_t arg1 = f->R.rdi;
+    uint64_t arg2 = f->R.rsi;
+    uint64_t arg3 = f->R.rdx;
+    uint64_t arg4 = f->R.r10;
+    uint64_t arg5 = f->R.r8;
+    uint64_t arg6 = f->R.r9;
+
+    // switch (num) {
+    // case SYS_HALT:
+    //     halt ();
+    //     break;
+    // case SYS_EXIT:
+    //     exit (arg1);
+    //     break;
+    // // case SYS_FORK:
+    // case SYS_EXEC:
+    // case SYS_WAIT:
+    // case SYS_CREATE:
+    // case SYS_REMOVE:
+    // case SYS_OPEN:
+    // case SYS_FILESIZE:
+    // case SYS_READ:
+    // case SYS_WRITE:
+    // case SYS_SEEK:
+    // case SYS_TELL:
+    // case SYS_CLOSE:
+    // }
+}
+
+static void
+halt (void) {
+    power_off();
+}
+
+static void
+exit (int status) {
+    // terminates the current process
+    process_exit();
+    // returns status to the kernel
+    // if parent wait, status will be returned
 }

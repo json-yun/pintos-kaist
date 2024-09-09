@@ -13,13 +13,22 @@ Boot complete.
 Putting 'wait-killed' into the file system...
 Putting 'child-bad' into the file system...
 Executing 'wait-killed':
+wait-killed: dying due to interrupt 0x0d (#GP General Protection Exception).
+Interrupt 0x0d (#GP General Protection Exception) at rip=402e46
+ cr2=0000000000000000 error=               0
+rax 6c696b2d74696177 rbx 0000000000000000 rcx 0000000000000020 rdx 6c696b2d74696177
+rsp 000000004747fd90 rbp 000000004747fdb0 rsi ffffffffffffffff rdi 6c696b2d74696177
+rip 0000000000402e46 r8 0000000000401024  r9 0000000000000000 r10 0000000000000000
+r11 0000000000000000 r12 0000000000000000 r13 0000000000000000 r14 0000000000000000
+r15 0000000000000000 rflags 00000206
+es: 001b ds: 001b cs: 0023 ss: 001b
 Execution of 'wait-killed' complete.
-Timer: 68 ticks
-Thread: 36 idle ticks, 32 kernel ticks, 0 user ticks
+Timer: 259 ticks
+Thread: 39 idle ticks, 219 kernel ticks, 1 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 61 reads, 448 writes
+hd0:1: 107 reads, 448 writes
 hd1:0: 205 reads, 0 writes
-Console: 856 characters output
+Console: 1453 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

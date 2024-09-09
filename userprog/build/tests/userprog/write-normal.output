@@ -14,12 +14,12 @@ Putting 'write-normal' into the file system...
 Putting 'sample.txt' into the file system...
 Executing 'write-normal':
 Execution of 'write-normal' complete.
-Timer: 62 ticks
-Thread: 34 idle ticks, 28 kernel ticks, 0 user ticks
+Timer: 253 ticks
+Thread: 34 idle ticks, 219 kernel ticks, 0 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 61 reads, 252 writes
+hd0:1: 107 reads, 252 writes
 hd1:0: 107 reads, 0 writes
-Console: 862 characters output
+Console: 865 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

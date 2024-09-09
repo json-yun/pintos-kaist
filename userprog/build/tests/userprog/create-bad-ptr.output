@@ -12,13 +12,22 @@ Formatting file system...done.
 Boot complete.
 Putting 'create-bad-ptr' into the file system...
 Executing 'create-bad-ptr':
+create-bad-ptr: dying due to interrupt 0x0d (#GP General Protection Exception).
+Interrupt 0x0d (#GP General Protection Exception) at rip=402e13
+ cr2=0000000000000000 error=               0
+rax 622d657461657263 rbx 0000000000000000 rcx 0000000000000020 rdx 622d657461657263
+rsp 000000004747fd90 rbp 000000004747fdb0 rsi ffffffffffffffff rdi 622d657461657263
+rip 0000000000402e13 r8 0000000000400ff1  r9 0000000000000000 r10 0000000000000000
+r11 0000000000000000 r12 0000000000000000 r13 0000000000000000 r14 0000000000000000
+r15 0000000000000000 rflags 00000206
+es: 001b ds: 001b cs: 0023 ss: 001b
 Execution of 'create-bad-ptr' complete.
-Timer: 60 ticks
-Thread: 33 idle ticks, 27 kernel ticks, 0 user ticks
+Timer: 252 ticks
+Thread: 34 idle ticks, 217 kernel ticks, 1 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 34 reads, 234 writes
+hd0:1: 80 reads, 234 writes
 hd1:0: 103 reads, 0 writes
-Console: 812 characters output
+Console: 1411 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...
