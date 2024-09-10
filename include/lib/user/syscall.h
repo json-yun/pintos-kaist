@@ -78,4 +78,6 @@ get_fs_disk_write_cnt (void) {
 	return write_cnt;
 }
 
+//static struct file *find_file_by_fd(int fd);
+
 #endif /* lib/user/syscall.h */

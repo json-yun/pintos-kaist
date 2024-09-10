@@ -15,7 +15,8 @@ enum thread_status {
 	THREAD_RUNNING,     /* Running thread. */
 	THREAD_READY,       /* Not running but ready to run. */
 	THREAD_BLOCKED,     /* Waiting for an event to trigger. */
-	THREAD_DYING        /* About to be destroyed. */
+	THREAD_DYING,       /* About to be destroyed. */
+	//THREAD_EXIT /* syscall exit */
 };
 
 /* Thread identifier type.
@@ -43,6 +44,10 @@ typedef int tid_t;
 #define FP_MUL_INT(x, n) ((x) * (n))                                 // Multiply x by n: x * n
 #define FP_DIV(x, y) (((int64_t)(x)) * F_SCALE / (y))                           // Divide x by y: ((int64_t) x) * f / y
 #define FP_DIV_INT(x, n) ((x) / (n))                                 // Divide x by n: x / n
+
+#define FDT_PAGES 3 //fdt 할당시 필요한 페이지 개수. 페이지3미만 이면 multi-oom 실패
+#define FDCOUNT_LIMIT FDT_PAGES*(1<<9) // 1<<12 / 1<<3 = 512 
+
 
 /* A kernel thread or user process.
  *
@@ -118,9 +123,15 @@ struct thread {
     struct lock *waiting_for;      /* semaphore which thread is waiting for */
     struct list_elem all_elem;
 
+	struct file **fd_table;
+	
+	int fd_idx;
+	int exit_status;
+
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */
-	uint64_t *pml4;                     /* Page map level 4 */
+	uint64_t pml4;
+	
 #endif
 #ifdef VM
 	/* Table for whole virtual memory owned by thread. */
