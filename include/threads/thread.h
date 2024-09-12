@@ -43,6 +43,7 @@ typedef int tid_t;
 #define FP_MUL_INT(x, n) ((x) * (n))                                 // Multiply x by n: x * n
 #define FP_DIV(x, y) (((int64_t)(x)) * F_SCALE / (y))                           // Divide x by y: ((int64_t) x) * f / y
 #define FP_DIV_INT(x, n) ((x) / (n))                                 // Divide x by n: x / n
+#define USERPROG
 
 /* A kernel thread or user process.
  *
@@ -121,6 +122,7 @@ struct thread {
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */
 	uint64_t *pml4;                     /* Page map level 4 */
+    int exit_status;
 #endif
 #ifdef VM
 	/* Table for whole virtual memory owned by thread. */
