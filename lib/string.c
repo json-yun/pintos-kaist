@@ -224,11 +224,13 @@ strtok_r (char *s, const char *delimiters, char **save_ptr) {
 
 	/* If S is nonnull, start from it.
 	   If S is null, start from saved position. */
+       // 첫 호출 때에만 s를 주고, 이후에는 NULL 전달
 	if (s == NULL)
 		s = *save_ptr;
 	ASSERT (s != NULL);
 
 	/* Skip any DELIMITERS at our current position. */
+    // 
 	while (strchr (delimiters, *s) != NULL) {
 		/* strchr() will always return nonnull if we're searching
 		   for a null byte, because every string contains a null

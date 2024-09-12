@@ -178,6 +178,8 @@ process_exec (void *f_name) {
 
 	/* And then load the binary */
 	success = load (file_name, &_if);
+    strlcpy (thread_current()->name, file_name, sizeof thread_current()->name);
+    // hex_dump(0, _if.rsp, USER_STACK - _if.rsp, true);
 
 	/* If load failed, quit. */
 	palloc_free_page (file_name);
@@ -204,6 +206,7 @@ process_wait (tid_t child_tid UNUSED) {
 	/* XXX: Hint) The pintos exit if process_wait (initd), we recommend you
 	 * XXX:       to add infinite loop here before
 	 * XXX:       implementing the process_wait. */
+    for (int i=0; i < 1<<28; i++);
 	return -1;
 }
 
@@ -328,12 +331,20 @@ load (const char *file_name, struct intr_frame *if_) {
 	off_t file_ofs;
 	bool success = false;
 	int i;
+    char *save_ptr;
+    char *token;
+    size_t len;
+    char *argv[128];
+    int c = 0;
 
 	/* Allocate and activate page directory. */
 	t->pml4 = pml4_create ();
 	if (t->pml4 == NULL)
 		goto done;
 	process_activate (thread_current ());
+
+    token = strtok_r (file_name, " ", &save_ptr);
+    file_name = token;
 
 	/* Open executable file. */
 	file = filesys_open (file_name);
@@ -416,6 +427,26 @@ load (const char *file_name, struct intr_frame *if_) {
 
 	/* TODO: Your code goes here.
 	 * TODO: Implement argument passing (see project2/argument_passing.html). */
+    if_->rsp = USER_STACK;
+    do {
+        len = strlen(token);
+        if_->rsp -= len+1;
+        argv[c++] = (char *)if_->rsp;
+        strlcpy(if_->rsp, token, strlen(token)+1);
+    } while (token=strtok_r(NULL, " ", &save_ptr));
+    // word-align
+    if_->rsp -= if_->rsp & 7;
+
+    // address of argv
+    for (i = c; i >= 0; i--) {
+        if_->rsp -= 8;
+        // memcpy(if_->rsp, &argv[i], 8);
+        strlcpy(if_->rsp, &argv[i], 8);
+    }
+
+    if_->R.rsi = if_->rsp;
+    if_->rsp -= 8;
+    if_->R.rdi = c;
 
 	success = true;
 
