@@ -11,9 +11,8 @@
 #include "threads/synch.h"
 #include "threads/vaddr.h"
 #include "intrinsic.h"
-#ifdef USERPROG
 #include "userprog/process.h"
-#endif
+
 // th hi
 /* Random value for struct thread's `magic' member.
    Used to detect stack overflow.  See the big comment at the top
@@ -42,7 +41,6 @@ static struct list destruction_req;
 
 /* list of threads in THREAD_BLOCK state. */
 static struct list sleep_list;
-
 static struct list all_threads;
 
 /* Statistics. */
@@ -198,6 +196,7 @@ tid_t
 thread_create (const char *name, int priority,
 		thread_func *function, void *aux) {
 	struct thread *t;
+	struct thread *curr = thread_current ();
 	tid_t tid;
 
 	ASSERT (function != NULL);
@@ -221,18 +220,14 @@ thread_create (const char *name, int priority,
 	t->tf.ss = SEL_KDSEG;
 	t->tf.cs = SEL_KCSEG;
 	t->tf.eflags = FLAG_IF;
+	list_push_back(&curr->child_list, &t->child_elem);
+	t->parent_wait_thread = NULL;
+
+	// t->parent_wait_thread = curr;
 
 	/* Add to run queue. */
 	thread_unblock (t);
 
-    if (name == "main"){
-        t->nice = 0;
-        t->recent_cpu = 0;
-    }
-    else {
-        t->nice = thread_current()->nice;
-        t->recent_cpu = thread_current()->recent_cpu;
-    }
     if (thread_current() != idle_thread) {
         list_push_back(&all_threads, &t->all_elem);
         thread_preempt();
@@ -395,7 +390,8 @@ thread_exit (void) {
 	process_exit ();
 #endif
 
-    list_remove(&thread_current()->all_elem);
+	struct thread *curr = thread_current ();
+    list_remove (&curr->all_elem);
 	/* Just set our status to dying and schedule another process.
 	   We will be destroyed during the call to schedule_tail(). */
 	intr_disable ();
@@ -540,11 +536,27 @@ init_thread (struct thread *t, const char *name, int priority) {
 	t->status = THREAD_BLOCKED;
 	strlcpy (t->name, name, sizeof t->name);
     t->sleep_until = 0;
+
 	t->tf.rsp = (uint64_t) t + PGSIZE - sizeof (void *);
+
 	t->priority = priority;
 	t->original_priority = priority;
+
+	t->exit_status = -1;
+
     list_init(&t->lock_list);
+	list_init(&t->child_list);
 	t->magic = THREAD_MAGIC;
+	t->is_user = false;
+	t->fd_idx = 3;
+	if (name == "main"){
+        t->nice = 0;
+        t->recent_cpu = 0;
+    }
+    else {
+        t->nice = thread_current()->nice;
+        t->recent_cpu = thread_current()->recent_cpu;
+    }
 }
 
 bool

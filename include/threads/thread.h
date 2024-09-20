@@ -1,5 +1,6 @@
 #ifndef THREADS_THREAD_H
 #define THREADS_THREAD_H
+#define USERPROG
 
 #include <debug.h>
 #include <list.h>
@@ -43,6 +44,8 @@ typedef int tid_t;
 #define FP_MUL_INT(x, n) ((x) * (n))                                 // Multiply x by n: x * n
 #define FP_DIV(x, y) (((int64_t)(x)) * F_SCALE / (y))                           // Divide x by y: ((int64_t) x) * f / y
 #define FP_DIV_INT(x, n) ((x) / (n))                                 // Divide x by n: x / n
+
+#define FDMAXSIZE 20
 
 /* A kernel thread or user process.
  *
@@ -117,6 +120,17 @@ struct thread {
     struct list lock_list;              /* List lock the thread has */
     struct lock *waiting_for;      /* semaphore which thread is waiting for */
     struct list_elem all_elem;
+	int exit_status;
+	int read_cnt;
+
+	struct file *fd_table[FDMAXSIZE];
+	struct file *exec_file;
+	int fd_idx;
+
+	bool is_user;
+	struct list child_list;
+	struct list_elem child_elem;
+	struct thread *parent_wait_thread;
 
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */
@@ -129,6 +143,7 @@ struct thread {
 
 	/* Owned by thread.c. */
 	struct intr_frame tf;               /* Information for switching */
+	struct intr_frame* user_if;  
 	unsigned magic;                     /* Detects stack overflow. */
 };
 

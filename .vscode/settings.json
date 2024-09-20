@@ -13,7 +13,9 @@
         "malloc.h": "c",
         "debug.h": "c",
         "stdint.h": "c",
-        "*.inc": "c"
+        "*.inc": "c",
+        "process.h": "c",
+        "file.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }
