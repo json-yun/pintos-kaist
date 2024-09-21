@@ -15,7 +15,9 @@
         "stdint.h": "c",
         "*.inc": "c",
         "syscall-nr.h": "c",
-        "file.h": "c"
+        "file.h": "c",
+        "stdio.h": "c",
+        "syn-read.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }

@@ -3,6 +3,8 @@
         {
             "name": "Linux",
             "includePath": [
+                "${workspaceFolder}/include/lib",
+                "${workspaceFolder}/include/lib/kernel",
                 "${workspaceFolder}/include/lib/user",
                 "${workspaceFolder}/**"
             ],

@@ -198,6 +198,7 @@ tid_t
 thread_create (const char *name, int priority,
 		thread_func *function, void *aux) {
 	struct thread *t;
+    struct thread *parent = thread_current();
 	tid_t tid;
 
 	ASSERT (function != NULL);
@@ -221,20 +222,17 @@ thread_create (const char *name, int priority,
 	t->tf.ss = SEL_KDSEG;
 	t->tf.cs = SEL_KCSEG;
 	t->tf.eflags = FLAG_IF;
+    
 
 	/* Add to run queue. */
 	thread_unblock (t);
-
-    if (name == "main"){
-        t->nice = 0;
-        t->recent_cpu = 0;
-    }
-    else {
-        t->nice = thread_current()->nice;
-        t->recent_cpu = thread_current()->recent_cpu;
-    }
+    t->fdt = palloc_get_page(PAL_ZERO | PAL_ASSERT);
+    t->fd_idx = 2;
+    t->nice = parent->nice;
+    t->recent_cpu = parent->recent_cpu;
     if (thread_current() != idle_thread) {
         list_push_back(&all_threads, &t->all_elem);
+        list_push_back(&parent->child_list, &t->child_elem); // wait(), fork()
         thread_preempt();
     }
 
@@ -399,6 +397,7 @@ thread_exit (void) {
 	/* Just set our status to dying and schedule another process.
 	   We will be destroyed during the call to schedule_tail(). */
 	intr_disable ();
+    sema_up(&thread_current()->wait_sema);
 	do_schedule (THREAD_DYING);
 	NOT_REACHED ();
 }
@@ -545,6 +544,9 @@ init_thread (struct thread *t, const char *name, int priority) {
 	t->original_priority = priority;
     list_init(&t->lock_list);
 	t->magic = THREAD_MAGIC;
+    t->is_kernel = true;
+    list_init(&t->child_list);
+	sema_init (&t->wait_sema, 0);
 }
 
 bool
@@ -688,10 +690,13 @@ static void
 do_schedule(int status) {
 	ASSERT (intr_get_level () == INTR_OFF);
 	ASSERT (thread_current()->status == THREAD_RUNNING);
+    struct thread *t = thread_current();
 	while (!list_empty (&destruction_req)) {
 		struct thread *victim =
 			list_entry (list_pop_front (&destruction_req), struct thread, elem);
-		palloc_free_page(victim);
+        palloc_free_page(victim->fdt);
+		// palloc_free_page(victim);
+        // if(initial_thread)
 	}
 	thread_current ()->status = status;
 	schedule ();

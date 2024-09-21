@@ -18,6 +18,7 @@
 #include "threads/mmu.h"
 #include "threads/vaddr.h"
 #include "intrinsic.h"
+#include "threads/synch.h"
 #ifdef VM
 #include "vm/vm.h"
 #endif
@@ -31,6 +32,7 @@ static void __do_fork (void *);
 static void
 process_init (void) {
 	struct thread *current = thread_current ();
+    current->is_kernel = false;
 }
 
 /* Starts the first userland program, called "initd", loaded from FILE_NAME.
@@ -78,8 +80,18 @@ initd (void *f_name) {
 tid_t
 process_fork (const char *name, struct intr_frame *if_ UNUSED) {
 	/* Clone current thread to new thread.*/
-	return thread_create (name,
-			PRI_DEFAULT, __do_fork, thread_current ());
+    tid_t child_tid;
+    struct semaphore *sema;
+
+    sema_init(&sema, 0);
+
+    thread_current()->tf_user = *if_;
+    thread_current()->fork_sema = &sema;
+    child_tid = thread_create (name,
+			            PRI_DEFAULT, __do_fork, thread_current ());
+    sema_down(&sema);
+
+    return child_tid;
 }
 
 #ifndef VM
@@ -94,6 +106,7 @@ duplicate_pte (uint64_t *pte, void *va, void *aux) {
 	bool writable;
 
 	/* 1. TODO: If the parent_page is kernel page, then return immediately. */
+    if (is_kern_pte(pte)) return true;
 
 	/* 2. Resolve VA from the parent's page map level 4. */
 	parent_page = pml4_get_page (parent->pml4, va);
@@ -151,6 +164,7 @@ __do_fork (void *aux) {
 	 * TODO:       from the fork() until this function successfully duplicates
 	 * TODO:       the resources of parent.*/
 
+    sema_up(parent->fork_sema);
 	process_init ();
 
 	/* Finally, switch to the newly created process. */
@@ -180,7 +194,7 @@ process_exec (void *f_name) {
 
 	/* And then load the binary */
 	success = load (file_name, &_if);
-    hex_dump(0, _if.rsp, USER_STACK - _if.rsp, true);
+    // hex_dump(0, _if.rsp, USER_STACK - _if.rsp, true);
 
 	/* If load failed, quit. */
 	palloc_free_page (file_name);
@@ -192,6 +206,17 @@ process_exec (void *f_name) {
 	NOT_REACHED ();
 }
 
+struct thread *tid_to_threadp(tid_t tid) {
+    struct thread *t = thread_current();
+    struct thread *child;
+	struct list_elem *e;
+
+    for (e = list_begin(&t->child_list);  e != list_end(&t->child_list);  e = list_next(e)) {
+        child = list_entry(e, struct thread, child_elem);
+        if (child->tid == tid) return child;
+    }
+	return NULL;
+}
 
 /* Waits for thread TID to die and returns its exit status.  If
  * it was terminated by the kernel (i.e. killed due to an
@@ -203,12 +228,26 @@ process_exec (void *f_name) {
  * This function will be implemented in problem 2-2.  For now, it
  * does nothing. */
 int
-process_wait (tid_t child_tid UNUSED) {
-	/* XXX: Hint) The pintos exit if process_wait (initd), we recommend you
-	 * XXX:       to add infinite loop here before
-	 * XXX:       implementing the process_wait. */
-    for (int i=0; i < 1<<28; i++);
-	return -1;
+process_wait (tid_t child_tid) {
+    struct thread *t = thread_current();
+    struct thread *child = tid_to_threadp(child_tid);
+    tid_t exit_status;
+    /* TODO: 자식스레드가 종료된 후 wait를 호출하는 경우도 구현하기
+             자식이 먼저 죽어 스레드가 삭제된 경우도 고려하기 */
+    /* TODO: If pid did not call exit(), but was terminated by the kernel
+            wait(pid) must return -1. */
+    if (child == NULL) return -1;
+    if (child->status == THREAD_DYING && child->wait_sema.value == 0) {
+    // 세마포어를 올리지 못하고 죽은 경우: -1을 리턴
+        list_remove(&child->child_elem);
+        return -1;
+    }
+    sema_down(&child->wait_sema);
+    exit_status = child->exit_status;
+    list_remove(&child->child_elem);
+    palloc_free_page(child);
+    
+	return exit_status; // child_tid
 }
 
 /* Exit the process. This function is called by thread_exit (). */
@@ -220,7 +259,12 @@ process_exit (void) {
 	 * TODO: project2/process_termination.html).
 	 * TODO: We recommend you to implement process resource cleanup here. */
 
-    printf("%s: exit(%d)\n", curr->name, curr->exit_status);
+    // TODO: Do not print these messages
+    // when a kernel thread(that is not a user process) terminates, 
+    // or when the halt system call is invoked.
+    if (!curr->is_kernel)
+        printf("%s: exit(%d)\n", curr->name, curr->exit_status);
+
 	process_cleanup ();
 }
 

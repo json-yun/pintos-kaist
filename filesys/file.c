@@ -52,7 +52,7 @@ file_duplicate (struct file *file) {
 void
 file_close (struct file *file) {
 	if (file != NULL) {
-		file_allow_write (file);
+		file_allow_write (file); // 쓰기 가능으로 전환
 		inode_close (file->inode);
 		free (file);
 	}

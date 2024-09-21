@@ -5,6 +5,7 @@
 #include <list.h>
 #include <stdint.h>
 #include "threads/interrupt.h"
+#include "threads/synch.h"
 #ifdef VM
 #include "vm/vm.h"
 #endif
@@ -44,6 +45,10 @@ typedef int tid_t;
 #define FP_DIV(x, y) (((int64_t)(x)) * F_SCALE / (y))                           // Divide x by y: ((int64_t) x) * f / y
 #define FP_DIV_INT(x, n) ((x) / (n))                                 // Divide x by n: x / n
 #define USERPROG
+
+#ifdef USERPROG
+#define FD_LIMIT 1 << 9
+#endif
 
 /* A kernel thread or user process.
  *
@@ -123,6 +128,15 @@ struct thread {
 	/* Owned by userprog/process.c. */
 	uint64_t *pml4;                     /* Page map level 4 */
     int exit_status;
+    bool is_kernel;
+    struct file **fdt;
+    int fd_idx;
+    struct semaphore wait_sema;
+    struct list child_list;
+    struct list_elem child_elem;
+    struct semaphore *fork_sema;
+
+    struct intr_frame tf_user;
 #endif
 #ifdef VM
 	/* Table for whole virtual memory owned by thread. */
