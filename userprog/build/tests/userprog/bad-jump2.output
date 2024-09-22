@@ -23,14 +23,14 @@ rip 0000008004000000 r8 0000000000000000  r9 0000000000000000 r10 00000000000000
 r11 0000000000000206 r12 0000000000000000 r13 0000000000000000 r14 0000000000000000
 r15 0000000000000000 rflags 00000212
 es: 001b ds: 001b cs: 0023 ss: 001b
-bad-jump2: exit(0)
+bad-jump2: exit(-1)
 Execution of 'bad-jump2' complete.
-Timer: 65 ticks
-Thread: 38 idle ticks, 25 kernel ticks, 2 user ticks
+Timer: 68 ticks
+Thread: 35 idle ticks, 31 kernel ticks, 2 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 80 reads, 234 writes
 hd1:0: 103 reads, 0 writes
-Console: 1485 characters output
+Console: 1486 characters output
 Keyboard: 0 keys pressed
 Exception: 1 page faults
 Powering off...

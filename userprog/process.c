@@ -87,7 +87,7 @@ process_fork (const char *name, struct intr_frame *if_) {
     sema_init(&sema, 0);
 
     t->fork_sema = &sema;
-    t->if_ = *if_;
+    t->if_ = if_;
     child_tid = thread_create (name,
 			            PRI_DEFAULT, __do_fork, thread_current ());
 
@@ -108,14 +108,14 @@ duplicate_pte (uint64_t *pte, void *va, void *aux) {
 	bool writable;
 
 	/* 1. TODO: If the parent_page is kernel page, then return immediately. */
-    if (is_kern_pte(pte)) return true;
+    if (is_kern_pte(pte) || is_kernel_vaddr(va)) return true;
 
 	/* 2. Resolve VA from the parent's page map level 4. */
-	parent_page = pml4_get_page (parent->pml4, va);
+	if ( (parent_page = pml4_get_page (parent->pml4, va)) == NULL) return false;
 
 	/* 3. TODO: Allocate new PAL_USER page for the child and set result to
 	 *    TODO: NEWPAGE. */
-    newpage = palloc_get_page(PAL_USER);
+    if ( (newpage = palloc_get_page(PAL_USER)) == NULL) return false;
 
 	/* 4. TODO: Duplicate parent's page to the new page and
 	 *    TODO: check whether parent's page is writable or not (set WRITABLE
@@ -128,6 +128,7 @@ duplicate_pte (uint64_t *pte, void *va, void *aux) {
 	if (!pml4_set_page (current->pml4, va, newpage, writable)) {
 		/* 6. TODO: if fail to insert page, do error handling. */
         palloc_free_page(newpage);
+        pml4_destroy(current->pml4);
         return false;
 	}
 	return true;
@@ -144,7 +145,7 @@ __do_fork (void *aux) {
 	struct thread *parent = (struct thread *) aux;
 	struct thread *current = thread_current ();
 	/* TODO: somehow pass the parent_if. (i.e. process_fork()'s if_) */
-	struct intr_frame *parent_if = &parent->if_;
+	struct intr_frame *parent_if = parent->if_;
 	bool succ = true;
 
 	/* 1. Read the cpu context to local stack. */
@@ -184,6 +185,7 @@ __do_fork (void *aux) {
 	if (succ)
 		do_iret (&if_);
 error:
+
 	thread_exit ();
 }
 
@@ -258,7 +260,8 @@ process_wait (tid_t child_tid) {
     sema_down(&child->wait_sema);
     exit_status = child->exit_status;
     list_remove(&child->child_elem);
-    palloc_free_page(child);
+    // list_remove(&child->elem);
+    // palloc_free_page(child);
     
 	return exit_status; // child_tid
 }
@@ -267,6 +270,7 @@ process_wait (tid_t child_tid) {
 void
 process_exit (void) {
 	struct thread *curr = thread_current ();
+    struct thread *t;
 	/* TODO: Your code goes here.
 	 * TODO: Implement process termination message (see
 	 * TODO: project2/process_termination.html).
@@ -277,6 +281,11 @@ process_exit (void) {
     // or when the halt system call is invoked.
     if (!curr->is_kernel)
         printf("%s: exit(%d)\n", curr->name, curr->exit_status);
+        
+    for (struct list_elem *e = list_begin (&curr->child_list); e != list_end (&curr->child_list); e = list_next (e)) {
+        t = list_entry(e, struct thread, child_elem);
+        t->parent = NULL;
+    }
 
 	process_cleanup ();
 }

@@ -233,6 +233,7 @@ thread_create (const char *name, int priority,
     if (thread_current() != idle_thread) {
         list_push_back(&all_threads, &t->all_elem);
         list_push_back(&parent->child_list, &t->child_elem); // wait(), fork()
+        t->parent = parent;
         thread_preempt();
     }
 
@@ -545,6 +546,7 @@ init_thread (struct thread *t, const char *name, int priority) {
     list_init(&t->lock_list);
 	t->magic = THREAD_MAGIC;
     t->is_kernel = true;
+    t->exit_status = -1;
     list_init(&t->child_list);
 	sema_init (&t->wait_sema, 0);
 }
@@ -691,13 +693,25 @@ do_schedule(int status) {
 	ASSERT (intr_get_level () == INTR_OFF);
 	ASSERT (thread_current()->status == THREAD_RUNNING);
     struct thread *t = thread_current();
-	while (!list_empty (&destruction_req)) {
-		struct thread *victim =
-			list_entry (list_pop_front (&destruction_req), struct thread, elem);
-        palloc_free_page(victim->fdt);
-		// palloc_free_page(victim);
-        // if(initial_thread)
-	}
+
+#ifdef USERPROG
+    struct list_elem *e, *c;
+    struct thread *victim, *child;
+    
+    for (e = list_begin (&destruction_req); e != list_end (&destruction_req); e = list_next (e)) {
+		victim = list_entry (e, struct thread, elem);
+        if (!is_kernel_vaddr(victim->parent)) {
+            palloc_free_page(victim->fdt);
+            palloc_free_page(victim);
+        }
+    }
+#else
+    while (!list_empty (&destruction_req)) {
+    	struct thread *victim =
+    		list_entry (list_pop_front (&destruction_req), struct thread, elem);
+            palloc_free_page(victim);      
+        }
+#endif
 	thread_current ()->status = status;
 	schedule ();
 }

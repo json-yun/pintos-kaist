@@ -1,13 +1,22 @@
 FAIL
-Kernel panic in run: PANIC at ../../threads/thread.c:375 in thread_current(): assertion `t->status == THREAD_RUNNING' failed.
-Call stack: 0x80042184d8 0x800420743b 0x800420acfa 0x800421b7be 0x800421b8dc 0x80042159db 0x800421d1e9 0x80042091f0 0x800420960e
-Translation of call stack:
-0x00000080042184d8: debug_panic (lib/kernel/debug.c:32)
-0x000000800420743b: thread_current (threads/thread.c:377)
-0x000000800420acfa: lock_held_by_current_thread (threads/synch.c:323)
-0x000000800421b7be: acquire_console (lib/kernel/console.c:87)
-0x000000800421b8dc: vprintf (lib/kernel/console.c:122)
-0x00000080042159db: printf (lib/stdio.c:80)
-0x000000800421d1e9: page_fault (userprog/exception.c:158 (discriminator 12))
-0x00000080042091f0: intr_handler (threads/interrupt.c:358)
-0x000000800420960e: intr_entry (threads/intr-stubs.o:?)
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (wait-twice) begin
+  (child-simple) run
+  child-simple: exit(81)
+  (wait-twice) wait(exec()) = 81
+  (wait-twice) wait(exec()) = -1
+  (wait-twice) end
+  wait-twice: exit(0)
+Differences in `diff -u' format:
+  (wait-twice) begin
+- (child-simple) run
+- child-simple: exit(81)
+- (wait-twice) wait(exec()) = 81
++ (wait-twice) end
++ child-simple: exit(0)
++ (wait-twice) wait(exec()) = 0
+  (wait-twice) wait(exec()) = -1
+  (wait-twice) end
+  wait-twice: exit(0)

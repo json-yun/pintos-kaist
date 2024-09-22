@@ -133,10 +133,11 @@ struct thread {
     int fd_idx;
     struct semaphore wait_sema;
     struct list child_list;
+    struct thread *parent;
     struct list_elem child_elem;
     struct semaphore *fork_sema;
 
-    struct intr_frame if_;
+    struct intr_frame *if_;
 #endif
 #ifdef VM
 	/* Table for whole virtual memory owned by thread. */

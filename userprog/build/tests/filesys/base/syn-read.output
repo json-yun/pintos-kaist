@@ -4,7 +4,7 @@ Kernel command line: -q -f put syn-read put child-syn-read run syn-read
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
-Calibrating timer...  157,081,600 loops/s.
+Calibrating timer...  130,867,200 loops/s.
 hd0:0: detected 321 sector (160 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 225 sector (112 kB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -18,255 +18,120 @@ Executing 'syn-read':
 (syn-read) open "data"
 (syn-read) write "data"
 (syn-read) close "data"
-Kernel PANIC at ../../threads/thread.c:375 in thread_current(): assertion `t->status == THREAD_RUNNING' failed.
-Call stack: 0x80042184d8 0x800420743b 0x800420acfa 0x800421b7be 0x800421b8dc 0x80042159db 0x800421d1e9 0x80042091f0 0x800420960e 0x646165722d6e7973Page fault at 0x100000003: not present error reading page in kernel context.
-Interrupt 0x0e (#PF Page-Fault Exception) at rip=8004215512
- cr2=0000000100000003 errorKernel PANIC recursion at ../../threads/thread.c:375 in thread_current().
-Interrupt 0x0d (#GP General Protection Exception) at rip=8004220287
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004221b1d rdx 0000000000000024
-rsp 0000008004241230 rbp 0000008004241240 rsi 00000000000000c1 rdi cccccccccccccccc
-rip 0000008004220287 r8 0000008004221b4a  r9 00000080042183fd r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000006
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 000000000000002d
-rsp 0000008004241020 rbp 0000008004241030 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 0000000000000036
-rsp 0000008004240e10 rbp 0000008004240e20 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 000000000000003f
-rsp 0000008004240c00 rbp 0000008004240c10 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 0000000000000008
-rsp 00000080042409f0 rbp 0000008004240a00 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 0000000000000011
-rsp 00000080042407e0 rbp 00000080042407f0 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 000000000000001a
-rsp 00000080042405d0 rbp 00000080042405e0 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 0000000000000023
-rsp 00000080042403c0 rbp 00000080042403d0 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 000000000000002c
-rsp 00000080042401b0 rbp 00000080042401c0 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 0000000000000035
-rsp 000000800423ffa0 rbp 000000800423ffb0 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 000000000000003e
-rsp 000000800423fd90 rbp 000000800423fda0 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 0000000000000007
-rsp 000000800423fb80 rbp 000000800423fb90 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 0000000000000010
-rsp 000000800423f970 rbp 000000800423f980 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 0000000000000019
-rsp 000000800423f760 rbp 000000800423f770 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 0000000000000022
-rsp 000000800423f550 rbp 000000800423f560 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 000000000000002b
-rsp 000000800423f340 rbp 000000800423f350 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 0000000000000034
-rsp 000000800423f130 rbp 000000800423f140 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 000000000000003d
-rsp 000000800423ef20 rbp 000000800423ef30 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 0000000000000006
-rsp 000000800423ed10 rbp 000000800423ed20 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 000000000000000f
-rsp 000000800423eb00 rbp 000000800423eb10 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 0000000000000018
-rsp 000000800423e8f0 rbp 000000800423e900 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 0000000000000021
-rsp 000000800423e6e0 rbp 000000800423e6f0 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 000000000000002a
-rsp 000000800423e4d0 rbp 000000800423e4e0 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 0000000000000033
-rsp 000000800423e2c0 rbp 000000800423e2d0 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 000000000000003c
-rsp 000000800423e0b0 rbp 000000800423e0c0 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 0000000000000005
-rsp 000000800423dea0 rbp 000000800423deb0 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 000000000000000e
-rsp 000000800423dc90 rbp 000000800423dca0 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 0000000000000017
-rsp 000000800423da80 rbp 000000800423da90 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 0000000000000020
-rsp 000000800423d870 rbp 000000800423d880 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 0000000000000029
-rsp 000000800423d660 rbp 000000800423d670 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421fd6d
- cr2=0000000100000003 error=               0
-rax cccccccccccccccc rbx 0000000000000000 rcx 0000008004225be0 rdx 0000000000000032
-rsp 000000800423d450 rbp 000000800423d460 rsi 000000000000000a rdi cccccccccccccccc
-rip 000000800421fd6d r8 00000080042183fd  r9 000000800421ba18 r10 0000000000000000
-r11 0000000000000206 r12 000000800421d332 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000086
-es: 0010 ds: 0010 cs: 0008 ss: 0010
+(syn-read) exec child 1 of 10: "child-syn-read 0"
+(syn-read) exec child 2 of 10: "child-syn-read 1"
+(syn-read) exec child 2 of 10: "child-syn-read 1"
+(syn-read) exec child 3 of 10: "child-syn-read 2"
+(syn-read) exec child 3 of 10: "child-syn-read 2"
+(syn-read) exec child 3 of 10: "child-syn-read 2"
+(syn-read) exec child 4 of 10: "child-syn-read 3"
+(syn-read) exec child 3 of 10: "child-syn-read 2"
+(syn-read) exec child 4 of 10: "child-syn-read 3"
+(syn-read) exec child 4 of 10: "child-syn-read 3"
+(syn-read) exec child 4 of 10: "child-syn-read 3"
+(syn-read) exec child 5 of 10: "child-syn-read 4"
+(syn-read) exec child 4 of 10: "child-syn-read 3"
+(syn-read) exec child 4 of 10: "child-syn-read 3"
+(syn-read) exec child 5 of 10: "child-syn-read 4"
+(syn-read) exec child 4 of 10: "child-syn-read 3"
+(syn-read) exec child 5 of 10: "child-syn-read 4"
+(syn-read) exec child 5 of 10: "child-syn-read 4"
+(syn-read) exec child 5 of 10: "child-syn-read 4"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 4 of 10: "child-syn-read 3"
+(syn-read) exec child 5 of 10: "child-syn-read 4"
+(syn-read) exec child 5 of 10: "child-syn-read 4"
+(syn-read) exec child 5 of 10: "child-syn-read 4"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 5 of 10: "child-syn-read 4"
+(syn-read) exec child 5 of 10: "child-syn-read 4"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 5 of 10: "child-syn-read 4"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 5 of 10: "child-syn-read 4"
+(syn-read) exec child 5 of 10: "child-syn-read 4"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 5 of 10: "child-syn-read 4"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 5 of 10: "child-syn-read 4"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 8 of 10: "child-syn-read 7"
+(syn-read) exec child 5 of 10: "child-syn-read 4"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 8 of 10: "child-syn-read 7"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 8 of 10: "child-syn-read 7"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 8 of 10: "child-syn-read 7"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 8 of 10: "child-syn-read 7"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 8 of 10: "child-syn-read 7"
+(syn-read) exec child 8 of 10: "child-syn-read 7"
+(syn-read) exec child 8 of 10: "child-syn-read 7"
+(syn-read) exec child 9 of 10: "child-syn-read 8"
+(syn-read) wait for child 1 of 10 returned -1 (expected 0)
+(syn-read) wait for child 1 of 10 returned -1 (expected 0): FAILED
+child-syn-read: exit(1)
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 8 of 10: "child-syn-read 7"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 8 of 10: "child-syn-read 7"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 8 of 10: "child-syn-read 7"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 8 of 10: "child-syn-read 7"
+(syn-read) exec child 8 of 10: "child-syn-read 7"
+(syn-read) exec child 8 of 10: "child-syn-read 7"
+(syn-read) exec child 9 of 10: "child-syn-read 8"
+(syn-read) wait for child 1 of 10 returned -1 (expected 0)
+(syn-read) wait for child 1 of 10 returned -1 (expected 0): FAILED
+child-syn-read: exit(1)
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 7 of 10: "child-syn-read 6"

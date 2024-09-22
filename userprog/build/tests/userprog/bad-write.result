@@ -6,7 +6,6 @@ Acceptable output:
   bad-write: exit(-1)
 Differences in `diff -u' format:
   (bad-write) begin
-- bad-write: exit(-1)
 + Interrupt 0x0e (#PF Page-Fault Exception) at rip=4000f1
 + rax 0000000000000000 rbx 0000000000000000 rcx 00000000000000ff rdx 0000000000000000
 + rsp 000000004747ff90 rbp 000000004747ff90 rsi 000000000060508e rdi 000000000060517f
@@ -14,6 +13,6 @@ Differences in `diff -u' format:
 + r11 0000000000000206 r12 0000000000000000 r13 0000000000000000 r14 0000000000000000
 + r15 0000000000000000 rflags 00000212
 + es: 001b ds: 001b cs: 0023 ss: 001b
-+ bad-write: exit(0)
+  bad-write: exit(-1)
 
 (User fault messages are excluded for matching purposes.)
