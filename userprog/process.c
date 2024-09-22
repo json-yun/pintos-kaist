@@ -78,17 +78,19 @@ initd (void *f_name) {
 /* Clones the current process as `name`. Returns the new process's thread id, or
  * TID_ERROR if the thread cannot be created. */
 tid_t
-process_fork (const char *name, struct intr_frame *if_ UNUSED) {
+process_fork (const char *name, struct intr_frame *if_) {
 	/* Clone current thread to new thread.*/
     tid_t child_tid;
-    struct semaphore *sema;
+    struct semaphore sema;
+    struct thread *t = thread_current();
 
     sema_init(&sema, 0);
 
-    thread_current()->tf_user = *if_;
-    thread_current()->fork_sema = &sema;
+    t->fork_sema = &sema;
+    t->if_ = *if_;
     child_tid = thread_create (name,
 			            PRI_DEFAULT, __do_fork, thread_current ());
+
     sema_down(&sema);
 
     return child_tid;
@@ -113,15 +115,20 @@ duplicate_pte (uint64_t *pte, void *va, void *aux) {
 
 	/* 3. TODO: Allocate new PAL_USER page for the child and set result to
 	 *    TODO: NEWPAGE. */
+    newpage = palloc_get_page(PAL_USER);
 
 	/* 4. TODO: Duplicate parent's page to the new page and
 	 *    TODO: check whether parent's page is writable or not (set WRITABLE
 	 *    TODO: according to the result). */
+    memcpy(newpage, parent_page, PGSIZE);
+    writable = is_writable(pte);
 
 	/* 5. Add new page to child's page table at address VA with WRITABLE
 	 *    permission. */
 	if (!pml4_set_page (current->pml4, va, newpage, writable)) {
 		/* 6. TODO: if fail to insert page, do error handling. */
+        palloc_free_page(newpage);
+        return false;
 	}
 	return true;
 }
@@ -137,7 +144,7 @@ __do_fork (void *aux) {
 	struct thread *parent = (struct thread *) aux;
 	struct thread *current = thread_current ();
 	/* TODO: somehow pass the parent_if. (i.e. process_fork()'s if_) */
-	struct intr_frame *parent_if;
+	struct intr_frame *parent_if = &parent->if_;
 	bool succ = true;
 
 	/* 1. Read the cpu context to local stack. */
@@ -163,8 +170,14 @@ __do_fork (void *aux) {
 	 * TODO:       in include/filesys/file.h. Note that parent should not return
 	 * TODO:       from the fork() until this function successfully duplicates
 	 * TODO:       the resources of parent.*/
+    current->fdt = palloc_get_page(PAL_ZERO | PAL_ASSERT);
+    for (unsigned i = 2; i < FD_LIMIT; i++) {
+        if (parent->fdt[i] != NULL)
+            current->fdt[i] = file_duplicate(parent->fdt[i]);
+    }
 
     sema_up(parent->fork_sema);
+    if_.R.rax = 0;
 	process_init ();
 
 	/* Finally, switch to the newly created process. */

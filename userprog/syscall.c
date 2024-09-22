@@ -16,7 +16,7 @@ void syscall_entry (void);
 void syscall_handler (struct intr_frame *);
 void halt (void);
 void exit (int status);
-pid_t fork (const char *thread_name);
+pid_t fork (const char *thread_name, struct thread *f);
 int exec (const char *file);
 int wait (pid_t pid);
 bool create (const char *file, unsigned initial_size);
@@ -76,7 +76,7 @@ syscall_handler (struct intr_frame *f) {
 			exit(f->R.rdi);
             break;
 		case SYS_FORK:
-			f->R.rax = fork(f->R.rdi);		
+			f->R.rax = fork(f->R.rdi, f);		
             break;
 		case SYS_EXEC:
 			f->R.rax = exec(f->R.rdi);
@@ -164,8 +164,8 @@ exit (int status) {
 }
 
 pid_t
-fork (const char *thread_name){
-    return process_fork(thread_name, NULL);
+fork (const char *thread_name, struct thread *f){
+    return process_fork(thread_name, f);
 }
 
 int

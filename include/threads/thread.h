@@ -136,7 +136,7 @@ struct thread {
     struct list_elem child_elem;
     struct semaphore *fork_sema;
 
-    struct intr_frame tf_user;
+    struct intr_frame if_;
 #endif
 #ifdef VM
 	/* Table for whole virtual memory owned by thread. */

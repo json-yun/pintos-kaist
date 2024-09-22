@@ -4,7 +4,7 @@ Kernel command line: -q -f put exec-boundary put child-simple run exec-boundary
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
-Calibrating timer...  130,867,200 loops/s.
+Calibrating timer...  129,228,800 loops/s.
 hd0:0: detected 321 sector (160 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 207 sector (103 kB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -14,17 +14,38 @@ Putting 'exec-boundary' into the file system...
 Putting 'child-simple' into the file system...
 Executing 'exec-boundary':
 (exec-boundary) begin
+((null)) @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+(exec-boundary) fork
+(exec-boundary) wait
+(exec-boundary) wait: FAILED
+child-simple: exit(1)
 (exec-boundary) fork
 (exec-boundary) wait
 (exec-boundary) wait: FAILED
 exec-boundary: exit(1)
-Execution of 'exec-boundary' complete.
-Timer: 72 ticks
-Thread: 39 idle ticks, 31 kernel ticks, 2 user ticks
+Interrupt 0x0d (#GP General Protection Exception) at rip=8004218d3d
+ cr2=0000000000000000 error=               0
+rax cccccccccccccccc rbx 0000000000000000 rcx 0000000000000003 rdx cccccccccccccccc
+rsp 0000008004241e70 rbp 0000008004241e80 rsi 0000008004207aba rdi 0000008004240028
+rip 0000008004218d3d r8 0000008004241de8  r9 000000800421ba18 r10 0000000000000000
+r11 0000000000000202 r12 000000800421d3e0 r13 0000000000000000 r14 0000000000000000
+r15 0000000000000000 rflags 00000002
+es: 001b ds: 001b cs: 0008 ss: 0010
+Kernel PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
+Call stack: 0x80042184d8 0x800421d12b 0x80042091f0 0x800420960e 0x8004218d93 0x8004207dc2 0x8004207514 0x800421d7da 0x800421d43f 0x800421d31fPage fault at 0x4747ff00: not present error reading page in kernel context.
+Interrupt 0x0e (#PF Page-Fault Exception) at rip=8004215512
+ cr2=000000004747ff00 error=               0
+rax 000000004747ff00 rbx 0000000000000000 rcx 00000080040b8000 rdx 00000000000003d4
+rsp 0000008004241cb0 rbp 0000008004241cc0 rsi 000000000000bd0f rdi 0000000000000000
+rip 0000008004215512 r8 0000008004241bc8  r9 000000800421ba18 r10 0000000000000000
+r11 0000000000000202 r12 000000800421d3e0 r13 0000000000000000 r14 0000000000000000
+r15 0000000000000000 rflags 00000006
+es: 0010 ds: 0010 cs: 0008 ss: 0010
+Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
+Timer: 76 ticks
+Thread: 41 idle ticks, 33 kernel ticks, 2 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 107 reads, 452 writes
 hd1:0: 207 reads, 0 writes
-Console: 989 characters output
-Keyboard: 0 keys pressed
-Exception: 0 page faults
-Powering off...
+Console: 2507 characters output
+Key

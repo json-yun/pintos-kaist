@@ -1,8 +1,8 @@
 #include <string.h>
 #include <debug.h>
 
-/* Copies SIZE bytes from SRC to DST, which must not overlap.
-   Returns DST. */
+/** Copies SIZE bytes from SRC to DST, which must not overlap.
+   @returns DST. */
 void *
 memcpy (void *dst_, const void *src_, size_t size) {
 	unsigned char *dst = dst_;

@@ -1,18 +1,14 @@
 FAIL
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (wait-simple) begin
-  (child-simple) run
-  child-simple: exit(81)
-  (wait-simple) wait(exec()) = 81
-  (wait-simple) end
-  wait-simple: exit(0)
-Differences in `diff -u' format:
-  (wait-simple) begin
-- (child-simple) run
-- child-simple: exit(81)
-- (wait-simple) wait(exec()) = 81
-+ (wait-simple) wait(exec()) = -1
-  (wait-simple) end
-  wait-simple: exit(0)
+Kernel panic in run: PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
+Call stack: 0x80042184d8 0x800421d12b 0x80042091f0 0x800420960e 0x8004218d93 0x8004207dc2 0x8004207514 0x800421d7da 0x800421d43f 0x800421d31f
+Translation of call stack:
+0x00000080042184d8: debug_panic (lib/kernel/debug.c:32)
+0x000000800421d12b: kill (userprog/exception.c:103)
+0x00000080042091f0: intr_handler (threads/interrupt.c:358)
+0x000000800420960e: intr_entry (threads/intr-stubs.o:?)
+0x0000008004218d93: list_pop_front (lib/kernel/list.c:254)
+0x0000008004207dc2: do_schedule (threads/thread.c:696)
+0x0000008004207514: thread_exit (threads/thread.c:402)
+0x000000800421d7da: fork (userprog/syscall.c:167)
+0x000000800421d43f: syscall_handler (userprog/syscall.c:79)
+0x000000800421d31f: no_sti (userprog/syscall-entry.o:?)
