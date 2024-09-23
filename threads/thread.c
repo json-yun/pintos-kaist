@@ -225,11 +225,11 @@ thread_create (const char *name, int priority,
     
 
 	/* Add to run queue. */
-    t->fdt = palloc_get_page(PAL_ZERO);
-    if (t->fdt == NULL) {
-        palloc_free_page(t);
-        return TID_ERROR;
-    }
+    // t->fdt = palloc_get_page(PAL_ZERO);
+    // if (t->fdt == NULL) {
+    //     palloc_free_page(t);
+    //     return TID_ERROR;
+    // }
 	thread_unblock (t);
     t->nice = parent->nice;
     t->recent_cpu = parent->recent_cpu;
@@ -707,13 +707,13 @@ do_schedule(int status) {
         if (!is_kernel_vaddr(victim->parent)) {
             list_remove(e);
             e = list_next (e);
-            palloc_free_page(victim->fdt);
+            // palloc_free_page(victim->fdt);
             palloc_free_page(victim);
         }
         else if (victim->parent->status == THREAD_DYING) {
             list_remove(e);
             e = list_next (e);
-            palloc_free_page(victim->fdt);
+            // palloc_free_page(victim->fdt);
             palloc_free_page(victim);
         }
         else e = list_next (e);

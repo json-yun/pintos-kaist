@@ -180,10 +180,10 @@ __do_fork (void *aux) {
 	 * TODO:       in include/filesys/file.h. Note that parent should not return
 	 * TODO:       from the fork() until this function successfully duplicates
 	 * TODO:       the resources of parent.*/
-    current->fdt = palloc_get_page(PAL_ZERO);
-    if (current->fdt == NULL){
-        goto error;
-    }
+    // current->fdt = palloc_get_page(PAL_ZERO);
+    // if (current->fdt == NULL){
+    //     goto error;
+    // }
     for (unsigned i = 2; i < FD_LIMIT; i++) {
         if (parent->fdt[i] != NULL)
             current->fdt[i] = file_duplicate(parent->fdt[i]);
@@ -274,7 +274,7 @@ process_wait (tid_t child_tid) {
     exit_status = child->exit_status;
     list_remove(&child->child_elem);
     list_remove(&child->elem);
-    palloc_free_page(child->fdt);
+    // palloc_free_page(child->fdt);
     palloc_free_page(child);
     
 	return exit_status; // child_tid
@@ -313,7 +313,7 @@ process_exit (void) {
             list_remove(e);
             list_remove(&t->elem);
             e = list_next (e);
-            palloc_free_page(t->fdt);
+            // palloc_free_page(t->fdt);
             palloc_free_page(t);
         }
         else e = list_next (e);

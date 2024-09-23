@@ -47,7 +47,8 @@ typedef int tid_t;
 #define USERPROG
 
 #ifdef USERPROG
-#define FD_LIMIT 1 << 9
+// #define FD_LIMIT 1 << 9
+#define FD_LIMIT 28
 #endif
 
 /* A kernel thread or user process.
@@ -129,7 +130,8 @@ struct thread {
 	uint64_t *pml4;                     /* Page map level 4 */
     int exit_status;
     bool is_kernel;
-    struct file **fdt;
+    // struct file **fdt;
+    struct file *fdt[FD_LIMIT];
     struct file *self_file;
     struct semaphore wait_sema;
     struct list child_list;
