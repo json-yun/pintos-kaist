@@ -94,8 +94,7 @@ process_fork (const char *name, struct intr_frame *if_) {
     if (child_tid == TID_ERROR) return -1;
     sema_down(&sema);
 
-    // if (sema.value != 0) return -1;
-    if (t->paik_teacher) return -1;
+    if (t->fork_sema->value != 0) return -1;
 
     return child_tid;
 }
@@ -181,7 +180,10 @@ __do_fork (void *aux) {
 	 * TODO:       in include/filesys/file.h. Note that parent should not return
 	 * TODO:       from the fork() until this function successfully duplicates
 	 * TODO:       the resources of parent.*/
-    current->fdt = palloc_get_page(PAL_ZERO | PAL_ASSERT);
+    current->fdt = palloc_get_page(PAL_ZERO);
+    if (current->fdt == NULL){
+        goto error;
+    }
     for (unsigned i = 2; i < FD_LIMIT; i++) {
         if (parent->fdt[i] != NULL)
             current->fdt[i] = file_duplicate(parent->fdt[i]);
@@ -195,7 +197,7 @@ __do_fork (void *aux) {
 	if (succ)
 		do_iret (&if_);
 error:
-    parent->paik_teacher = true;
+    parent->fork_sema->value = 1;
     sema_up(parent->fork_sema);
 	thread_exit ();
 }
@@ -220,7 +222,6 @@ process_exec (void *f_name) {
 
 	/* And then load the binary */
 	success = load (file_name, &_if);
-    // hex_dump(0, _if.rsp, USER_STACK - _if.rsp, true);
 
 	/* If load failed, quit. */
 	palloc_free_page (file_name);
@@ -297,9 +298,25 @@ process_exit (void) {
     
     if (curr->self_file != NULL)
         file_close(curr->self_file);
-    for (struct list_elem *e = list_begin (&curr->child_list); e != list_end (&curr->child_list); e = list_next (e)) {
+    
+    if (curr->fdt != NULL) {
+        for (int i = 2; i < FD_LIMIT; i++) {
+            if (curr->fdt[i] != NULL) {
+                file_close(curr->fdt[i]);
+            }
+        }
+    }
+    for (struct list_elem *e = list_begin (&curr->child_list); e != list_end (&curr->child_list);) {
         t = list_entry(e, struct thread, child_elem);
         t->parent = NULL;
+        if (t->status == THREAD_DYING) {
+            list_remove(e);
+            list_remove(&t->elem);
+            e = list_next (e);
+            palloc_free_page(t->fdt);
+            palloc_free_page(t);
+        }
+        else e = list_next (e);
     }
 
 	process_cleanup ();
@@ -538,7 +555,6 @@ load (const char *file_name, struct intr_frame *if_) {
 
 done:
 	/* We arrive here whether the load is successful or not. */
-	// file_close (file);
 	return success;
 }
 

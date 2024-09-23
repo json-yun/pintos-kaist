@@ -174,7 +174,7 @@ fork (const char *thread_name, struct thread *f){
 int
 exec (const char *file) {
     check_addr_validity(file);
-    void *safe_file = palloc_get_page(PAL_ZERO | PAL_ASSERT);
+    void *safe_file = palloc_get_page(PAL_ZERO);
     memcpy(safe_file, file, strlen(file)+1);
     process_exec(safe_file); // never return if successful.
     exit(-1); // if failed.

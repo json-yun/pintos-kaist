@@ -136,7 +136,6 @@ struct thread {
     struct thread *parent;
     struct list_elem child_elem;
     struct semaphore *fork_sema;
-    bool paik_teacher;
 
     struct intr_frame *if_;
 #endif

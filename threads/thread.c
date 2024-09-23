@@ -225,8 +225,12 @@ thread_create (const char *name, int priority,
     
 
 	/* Add to run queue. */
+    t->fdt = palloc_get_page(PAL_ZERO);
+    if (t->fdt == NULL) {
+        palloc_free_page(t);
+        return TID_ERROR;
+    }
 	thread_unblock (t);
-    t->fdt = palloc_get_page(PAL_ZERO | PAL_ASSERT);
     t->nice = parent->nice;
     t->recent_cpu = parent->recent_cpu;
     if (thread_current() != idle_thread) {
