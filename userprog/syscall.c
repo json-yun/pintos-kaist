@@ -10,6 +10,9 @@
 #include "filesys/file.h"
 #include "filesys/filesys.h"
 #include "userprog/process.h"
+#include "filesys/inode.h"
+#include "threads/palloc.h"
+#include <string.h>
 typedef int pid_t;
 
 void syscall_entry (void);
@@ -139,7 +142,6 @@ int add_file_to_fdt(struct file *file) {
     if (fd >= FD_LIMIT) return -1;
 
     t->fdt[fd] = file;
-    t->fd_idx = fd; // ?? 이거 뭐임
     return fd;
 }
 
@@ -165,11 +167,17 @@ exit (int status) {
 
 pid_t
 fork (const char *thread_name, struct thread *f){
+    check_addr_validity(thread_name);
     return process_fork(thread_name, f);
 }
 
 int
 exec (const char *file) {
+    check_addr_validity(file);
+    void *safe_file = palloc_get_page(PAL_ZERO | PAL_ASSERT);
+    memcpy(safe_file, file, strlen(file)+1);
+    process_exec(safe_file); // never return if successful.
+    exit(-1); // if failed.
 }
 
 int

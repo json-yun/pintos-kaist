@@ -227,11 +227,10 @@ thread_create (const char *name, int priority,
 	/* Add to run queue. */
 	thread_unblock (t);
     t->fdt = palloc_get_page(PAL_ZERO | PAL_ASSERT);
-    t->fd_idx = 2;
     t->nice = parent->nice;
     t->recent_cpu = parent->recent_cpu;
     if (thread_current() != idle_thread) {
-        list_push_back(&all_threads, &t->all_elem);
+        if (thread_mlfqs) list_push_back(&all_threads, &t->all_elem);
         list_push_back(&parent->child_list, &t->child_elem); // wait(), fork()
         t->parent = parent;
         thread_preempt();
@@ -394,7 +393,7 @@ thread_exit (void) {
 	process_exit ();
 #endif
 
-    list_remove(&thread_current()->all_elem);
+    if (thread_mlfqs) list_remove(&thread_current()->all_elem);
 	/* Just set our status to dying and schedule another process.
 	   We will be destroyed during the call to schedule_tail(). */
 	intr_disable ();
@@ -547,6 +546,7 @@ init_thread (struct thread *t, const char *name, int priority) {
 	t->magic = THREAD_MAGIC;
     t->is_kernel = true;
     t->exit_status = -1;
+    t->self_file = NULL;
     list_init(&t->child_list);
 	sema_init (&t->wait_sema, 0);
 }
@@ -698,12 +698,21 @@ do_schedule(int status) {
     struct list_elem *e, *c;
     struct thread *victim, *child;
     
-    for (e = list_begin (&destruction_req); e != list_end (&destruction_req); e = list_next (e)) {
+    for (e = list_begin (&destruction_req); e != list_end (&destruction_req);) {
 		victim = list_entry (e, struct thread, elem);
         if (!is_kernel_vaddr(victim->parent)) {
+            list_remove(e);
+            e = list_next (e);
             palloc_free_page(victim->fdt);
             palloc_free_page(victim);
         }
+        else if (victim->parent->status == THREAD_DYING) {
+            list_remove(e);
+            e = list_next (e);
+            palloc_free_page(victim->fdt);
+            palloc_free_page(victim);
+        }
+        else e = list_next (e);
     }
 #else
     while (!list_empty (&destruction_req)) {

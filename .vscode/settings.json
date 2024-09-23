@@ -18,7 +18,10 @@
         "file.h": "c",
         "stdio.h": "c",
         "syn-read.h": "c",
-        "mmu.h": "c"
+        "mmu.h": "c",
+        "filesys.h": "c",
+        "inode.h": "c",
+        "loader.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }

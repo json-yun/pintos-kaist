@@ -17,14 +17,14 @@ Executing 'priority-preempt':
 (priority-preempt) Thread high-priority iteration 3
 (priority-preempt) Thread high-priority iteration 4
 (priority-preempt) Thread high-priority done!
-Kernel PANIC at ../../lib/kernel/list.c:242 in list_remove(): assertion `is_interior (elem)' failed.
-Call stack: 0x8004218547 0x8004218d9d 0x80042074e5 0x80042078f4.
-The `backtrace' program can make call stacks useful.
-Read "Backtraces" in the "Debugging Tools" chapter
-of the Pintos documentation for more information.
+(priority-preempt) The high-priority thread should have already completed.
+(priority-preempt) end
+Execution of 'priority-preempt' complete.
 Timer: 56 ticks
-Thread: 31 idle ticks, 25 kernel ticks, 0 user ticks
+Thread: 30 idle ticks, 26 kernel ticks, 0 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 9 reads, 18 writes
-Console: 1264 characters output
-Key
+Console: 1084 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...

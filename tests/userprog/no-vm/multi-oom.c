@@ -141,7 +141,6 @@ make_children (void) {
 
 int
 main (int argc UNUSED, char *argv[] UNUSED) {
-    PANIC("hi");
   msg ("begin");
 
   int first_run_depth = make_children ();

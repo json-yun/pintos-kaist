@@ -130,12 +130,13 @@ struct thread {
     int exit_status;
     bool is_kernel;
     struct file **fdt;
-    int fd_idx;
+    struct file *self_file;
     struct semaphore wait_sema;
     struct list child_list;
     struct thread *parent;
     struct list_elem child_elem;
     struct semaphore *fork_sema;
+    bool paik_teacher;
 
     struct intr_frame *if_;
 #endif

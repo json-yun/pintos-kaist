@@ -1,22 +1,2 @@
 FAIL
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (multi-oom) begin
-  (multi-oom) Spawned at least 10 children.
-  (multi-oom) success. Program forked 10 iterations.
-  (multi-oom) end
-Differences in `diff -u' format:
-- (multi-oom) begin
-- (multi-oom) Spawned at least 10 children.
-- (multi-oom) success. Program forked 10 iterations.
-- (multi-oom) end
-+ User process ABORT at ../../tests/userprog/no-vm/multi-oom.c:144 in main(): hi
-+ Call stack: 0x4033cf 0x400459 0x400ed8.
-+ The `backtrace' program can make call stacks useful.
-+ Read "Backtraces" in the "Debugging Tools" chapter
-+ of the Pintos documentation for more information.
-
-(Process exit codes are excluded for matching purposes.)
-
-(User fault messages are excluded for matching purposes.)
+run: should have forked at least 120 times, but 78 times forked: FAILED

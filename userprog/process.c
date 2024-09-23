@@ -91,7 +91,11 @@ process_fork (const char *name, struct intr_frame *if_) {
     child_tid = thread_create (name,
 			            PRI_DEFAULT, __do_fork, thread_current ());
 
+    if (child_tid == TID_ERROR) return -1;
     sema_down(&sema);
+
+    // if (sema.value != 0) return -1;
+    if (t->paik_teacher) return -1;
 
     return child_tid;
 }
@@ -128,7 +132,13 @@ duplicate_pte (uint64_t *pte, void *va, void *aux) {
 	if (!pml4_set_page (current->pml4, va, newpage, writable)) {
 		/* 6. TODO: if fail to insert page, do error handling. */
         palloc_free_page(newpage);
-        pml4_destroy(current->pml4);
+        uint64_t *pml4;
+        pml4 = current->pml4;
+        if (pml4 != NULL) {
+            current->pml4 = NULL;
+            pml4_activate (NULL);
+            pml4_destroy (pml4);
+        }
         return false;
 	}
 	return true;
@@ -185,7 +195,8 @@ __do_fork (void *aux) {
 	if (succ)
 		do_iret (&if_);
 error:
-
+    parent->paik_teacher = true;
+    sema_up(parent->fork_sema);
 	thread_exit ();
 }
 
@@ -204,7 +215,7 @@ process_exec (void *f_name) {
 	_if.cs = SEL_UCSEG;
 	_if.eflags = FLAG_IF | FLAG_MBS;
 
-	/* We first kill the current context */
+	/* We first kill the current user context */
 	process_cleanup ();
 
 	/* And then load the binary */
@@ -258,10 +269,12 @@ process_wait (tid_t child_tid) {
         return -1;
     }
     sema_down(&child->wait_sema);
+
     exit_status = child->exit_status;
     list_remove(&child->child_elem);
-    // list_remove(&child->elem);
-    // palloc_free_page(child);
+    list_remove(&child->elem);
+    palloc_free_page(child->fdt);
+    palloc_free_page(child);
     
 	return exit_status; // child_tid
 }
@@ -281,7 +294,9 @@ process_exit (void) {
     // or when the halt system call is invoked.
     if (!curr->is_kernel)
         printf("%s: exit(%d)\n", curr->name, curr->exit_status);
-        
+    
+    if (curr->self_file != NULL)
+        file_close(curr->self_file);
     for (struct list_elem *e = list_begin (&curr->child_list); e != list_end (&curr->child_list); e = list_next (e)) {
         t = list_entry(e, struct thread, child_elem);
         t->parent = NULL;
@@ -420,6 +435,8 @@ load (const char *file_name, struct intr_frame *if_) {
 		printf ("load: %s: open failed\n", file_name);
 		goto done;
 	}
+    t->self_file = file;
+    file_deny_write(file);
 
 	/* Read and verify executable header. */
 	if (file_read (file, &ehdr, sizeof ehdr) != sizeof ehdr
@@ -504,6 +521,7 @@ load (const char *file_name, struct intr_frame *if_) {
     } while (token=strtok_r(NULL, " ", &save_ptr));
     // word-align
     if_->rsp -= if_->rsp & 7;
+    argv[c] = NULL;
 
     // address of argv
     for (i = c; i >= 0; i--) {
@@ -520,7 +538,7 @@ load (const char *file_name, struct intr_frame *if_) {
 
 done:
 	/* We arrive here whether the load is successful or not. */
-	file_close (file);
+	// file_close (file);
 	return success;
 }
 
